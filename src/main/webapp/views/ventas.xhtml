@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="./../templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <ui:define name="content" id="content">
+        <div>
+            <h3>#{beanVenta.title}</h3>
+        </div>
+        <script>
+            var hiddenCode = "#{beanVenta.viewEstate}";
+        </script>
+        <h:form id="formContent" >
+            <p:messages id="messages" showIcon="false" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
+            <p:panel >
+                <div class="container-fluid">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 alignRight ">
+                            <div class="form-group" align="right">
+                                <p:dialog header="Nueva Venta" widgetVar="dlg" resizable="false">
+                                    <h:panelGrid columns="1" cellpadding="5">
+                                        <h:outputLabel for="mesa" value="Seleccione una mesa:" />
+                                        <p:inputText id="mesa"  maxlength="2" value="#{beanVentas.venta.numeroMesa}" >
+                                            <pe:keyFilter   regEx="/[0-9_]/i"/>
+                                        </p:inputText>
+                                        <h:outputLabel for="personas" value="Cantidad de Personas:" />
+                                        <p:inputText id="personas" maxlength="2" value="#{beanVentas.venta.cantidadPersonas}" >
+                                            <pe:keyFilter regEx="/[0-9_]/i"/>
+                                        </p:inputText>
+                                        <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboMeseros" value ="Mesero:" /> 
+                                        <h:selectOneMenu  id="comboMeseros" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.venta.idMeseroFk}" >
+                                            <f:selectItem itemLabel="Selecciona un Mesero" itemValue=""  />
+                                            <f:selectItems value="#{beanVentas.listaMeseros}" var="meserito" itemLabel="#{meserito.nombreUsuario}" itemValue="#{meserito.idUsuarioPk}"/>
+                                        </h:selectOneMenu>
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Iniciar Venta" update="formContent" action="#{beanVentas.addVenta()}" oncomplete="PF('dlg').hide();"/>
+                                        </f:facet>  
+                                    </h:panelGrid>
+                                </p:dialog>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- #################Dialog 2####################### -->
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 alignRight ">
+                            <div class="form-group" align="right">
+                                <p:dialog header="Agregar Producto a Pedido" widgetVar="dlg2" resizable="false">
+                                    <h:panelGrid columns="1" cellpadding="5">
+                                        <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboProductos" value ="Seleccione un producto:" /> 
+                                        <h:selectOneMenu  id="comboProductos" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.dataProductoNuevo.idProductoFk}" >
+                                            <f:selectItem itemLabel="Selecciona un Producto" itemValue=""  />
+                                            <f:selectItems value="#{beanVentas.listaProductos}" var="pro" itemLabel="#{pro.nombreProducto}" itemValue="#{pro.idProductoPk}"/>
+                                        </h:selectOneMenu>
+                                        <h:outputLabel for="cantidadProducto" value="Cantidad:" />
+                                        <p:inputText id="cantidadProducto"  maxlength="2" value="#{beanVentas.dataProductoNuevo.cantidad}" >
+                                            <pe:keyFilter   regEx="/[1-9_]/i"/>
+                                        </p:inputText>
+                                        <h:outputLabel  value="Observaciones:" />
+                                        <p:inputTextarea rows="3" cols="20" value="#{beanVentas.dataProductoNuevo.observaciones}" />
+                                       
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Agregar a Pedido" update=":formContent" action="#{beanVentas.addVentaProducto()}" oncomplete="PF('dlg2').hide();"/>
+                                        </f:facet>  
+                                    </h:panelGrid>
+                                </p:dialog>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <!-- #################Dialog 2####################### -->
+                <div class="container-fluid">
+                    <div class="form-group" align="right">
+                        <p:commandButton value="Nueva Venta"  ajax="true" onclick="PF('dlg').show();" />
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <p:dataTable id="table" var="model"
+                                     rowIndexVar="rowIndex" value="#{beanVentas.listaVentas}" styleClass="ui-datatable-hor-scroll"  emptyMessage="No se encontraron Registros." rendered="#{beanVentas.viewEstate =='init'}">
+                            <p:column style="width:16px">
+                                <p:rowToggler />
+                            </p:column>
+                            <p:column headerText="#Mesa" width="80px;" class="alignCenter">
+                                <h:outputText value="#{model.numeroMesa}" />
+                            </p:column>
+                            <p:column headerText="Estatus" width="90px;" class="alignCenter">
+                                <h:outputText value="#{model.nombreEstatus}">
+
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Personas" width="50px;" class="alignCenter">
+                                <h:outputText value="#{model.cantidadPersonas}" />
+
+                            </p:column>
+                            <p:column headerText="Hora de Inicio" width="100px;" class="alignCenter">
+                                <h:outputText value="#{model.fechaInicio}" >
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Mesero" width="150px;" class="alignCenter">
+                                <h:outputText value="#{model.nombreMesero} #{model.apPaMesero}" />
+                            </p:column>
+                            <p:column headerText="Costo Total" width="60px;" class="alignRight">
+                                <h:outputText value="#{model.total}">
+                                    <f:convertNumber type="currency" currencySymbol="$" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Agregar Producto" width="60px;" class="alignRight">
+                            <p:commandButton ajax="true"  oncomplete="PF('dlg2').show();" update =":formContent" icon="ui-icon-triangle-1-e" styleClass="ui-priority-primary" >
+                                <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaAddProducto}"/>
+                            </p:commandButton>
+                        </p:column>
+                           
+                            <p:column headerText="Finalizar Venta" width="60px;" class="alignCenter">
+                                <p:commandButton id="editar" ajax="true" process="@this" action="#{beanVentas.finalizarVenta()}" icon="ui-icon-tag" styleClass="ui-priority-primary" update=":formContent">
+                                    <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaFinalizar}"/>
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="Cancelar Venta" width="60px;" class="alignCenter">
+                                <p:commandButton id="cancelar" ajax="true" process="@this" action="#{beanVentas.cancelarVenta()}" icon="ui-icon-trash" styleClass="ui-priority-primary" update=":formContent">
+                                    <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaRemove}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            <p:rowExpansion >
+                                <div class="col-lg-11 col-md-10 col-sm-10 col-xs-10 col-lg-offset-0">
+                                    <p:dataTable var="item" value="#{model.listaProductos}" styleClass="ui-"  emptyMessage="No se encontraron Registros.">                                   
+                                        <p:column headerText="N°" width="10px;" class="alignCenter">
+                                            <h:outputText value="#{item.count}" />
+                                        </p:column>
+                                        <p:column headerText="Productos" width="150px;" class="alignLeft">
+                                            <h:outputText value="#{item.nombreProducto}" />
+                                        </p:column>
+                                        <p:column headerText="Cantidad" width="50px;" class="alignCenter">
+                                            <h:outputText value="#{item.cantidad}" />
+                                        </p:column>
+                                        <p:column headerText="Observaciones" width="200px;" class="alignLeft">
+                                            <h:outputText value="#{item.observaciones}" />
+                                        </p:column>
+                                        <p:column headerText="P/U" width="60px;" class="alignRight">
+                                            <h:outputText value="#{item.precioVenta}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="P/M" width="60px;" class="alignRight">
+                                            <h:outputText value="#{item.totalProducto}">
+                                                <f:convertNumber type="currency" currencySymbol="$" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Remover" width="80px;" class="alignCenter">
+                                            <p:commandButton id="remover" ajax="true" immediate="true" update=":formContent" action="#{beanVentas.remove()}" icon="ui-icon-close" styleClass="ui-priority-primary">
+                                                <f:setPropertyActionListener value="#{item}" target="#{beanVentas.dataProductoRemove}"/>
+                                            </p:commandButton>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </div>
+                            </p:rowExpansion>
+                        </p:dataTable>
+
+                    </div>
+                </div>
+                 <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanVentas.rutaPDF}"/>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
