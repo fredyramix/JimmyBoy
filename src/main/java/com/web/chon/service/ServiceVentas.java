@@ -55,7 +55,7 @@ public class ServiceVentas implements IfaceVentas {
     @Override
     public int getNextFolioByIdSucursal(BigDecimal idSucursal) {
        getEjb();
-        return (ejb.getNextFolioByIdSucursal(idSucursal)+1);
+        return (ejb.getNextFolioByIdSucursal(idSucursal));
     }
 
     @Override
@@ -166,6 +166,13 @@ public class ServiceVentas implements IfaceVentas {
     public int updateVenta(Ventas venta) {
         getEjb();
         return ejb.updateVenta(venta);
+    }
+
+    @Override
+    public int cancelarVentaProducto(Ventas venta) {
+        getEjb();
+        return ejb.cancelarVentaProducto(venta);
+    
     }
     
 }

@@ -140,5 +140,16 @@ public class EjbVentas implements NegocioVentas{
         return query.executeUpdate();
     
     }
+
+    @Override
+    public int cancelarVentaProducto(Ventas venta) {
+       Query query = em.createNativeQuery("UPDATE  VENTAS SET TOTAL = ? WHERE ID_VENTAS_PK =?");
+        System.out.println("ventas ejb :" + venta.toString());
+        query.setParameter(1, venta.getTotal());
+        query.setParameter(2, venta.getIdVentaPk());
+        
+        return query.executeUpdate();
+        
+    }
     
 }

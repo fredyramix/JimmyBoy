@@ -107,6 +107,7 @@ public class BeanVentas implements Serializable {
         listaMeseros = new ArrayList<Usuario>();
         listaProductos = new ArrayList<Productos>();
         venta = new Ventas();
+        status = 2;
         setTitle("Ventas");
         setViewEstate("init");
         hoy = new Date();
@@ -179,6 +180,17 @@ public class BeanVentas implements Serializable {
         System.out.println("DataProductoRemove: " + dataProductoRemove.toString());
         if (ifaceVentasProductos.cancelarItem(dataProductoRemove) == 1) {
             JsfUtil.addSuccessMessageClean("Producto Eliminado Correctamente");
+            BigDecimal total = new BigDecimal(0);
+            for (Ventas v : listaVentas) {
+                if (v.getIdVentaPk().intValue() == dataProductoRemove.getIdVentasFk().intValue()) {
+                    total = v.getTotal().subtract(dataProductoRemove.getTotalProducto(), MathContext.UNLIMITED);
+
+                }
+            }
+            Ventas v = new Ventas();
+            v.setIdVentaPk(dataProductoRemove.getIdVentasFk());
+            v.setTotal(total);
+            ifaceVentas.cancelarVentaProducto(v);
             listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
         } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
@@ -188,7 +200,7 @@ public class BeanVentas implements Serializable {
 
     public void addVenta() {
         boolean bandera = false;
-        if (venta.getNumeroMesa() == null || venta.getIdMeseroFk() == null ) {
+        if (venta.getNumeroMesa() == null || venta.getIdMeseroFk() == null) {
             JsfUtil.addErrorMessageClean("Favor de ingresar todos los datos para realizar la venta");
         } else {
             for (Ventas v : listaVentas) {
@@ -200,8 +212,7 @@ public class BeanVentas implements Serializable {
             if (bandera) {
                 JsfUtil.addErrorMessageClean("Esa mesa se encuentra activa, seleccionar otra o finalizar la venta de esa mesa");
             } else {
-                if(venta.getCantidadPersonas() == null || venta.getCantidadPersonas().intValue()==0)
-                {
+                if (venta.getCantidadPersonas() == null || venta.getCantidadPersonas().intValue() == 0) {
                     venta.setCantidadPersonas(new BigDecimal(1));
                 }
                 venta.setIdVentaPk(new BigDecimal(ifaceVentas.getNextVal()));
@@ -226,34 +237,38 @@ public class BeanVentas implements Serializable {
     }
 
     public void finalizarVenta() {
-        
-       
+
         Ventas ventaImprimir = new Ventas();
         ventaFinalizar.setEstatusVenta(new BigDecimal(2));
         ventaFinalizar.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))));
         BigDecimal total = new BigDecimal(0);
-        for (Ventas v : listaVentas) 
-        {
+        for (Ventas v : listaVentas) {
             if (v.getIdVentaPk().intValue() == ventaFinalizar.getIdVentaPk().intValue()) {
                 ventaImprimir = v;
-                for (VentasProductos vp : v.getListaProductos()) 
-                {
+                for (VentasProductos vp : v.getListaProductos()) {
                     total = total.add(vp.getTotalProducto(), MathContext.UNLIMITED);
                 }
             }
         }
         ventaFinalizar.setTotal(total);
-        System.out.println("Venta a finalizar: " + ventaFinalizar.toString());
-        if (ifaceVentas.finalizarVenta(ventaFinalizar) == 1) {
-            JsfUtil.addSuccessMessageClean("Venta finalizada Correctamente");
+        if (ventaFinalizar.getTotal().intValue() != 0) 
+        {
+            System.out.println("Venta a finalizar: " + ventaFinalizar.toString());
+            if (ifaceVentas.finalizarVenta(ventaFinalizar) == 1) {
+                JsfUtil.addSuccessMessageClean("Venta finalizada Correctamente");
 
-            setParameterTicket(ventaImprimir);
-            generateReport(ventaImprimir.getIdVentaPk().intValue(), ventaImprimir.getFolio().intValue());
-            RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
+                setParameterTicket(ventaImprimir);
+                generateReport(ventaImprimir.getIdVentaPk().intValue(), ventaImprimir.getFolio().intValue());
+                RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
 
-            listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
-        } else {
-            JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
+                listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+            } else {
+                JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
+            }
+        }
+        else
+        {
+            JsfUtil.addWarnMessageClean("Agregue al menos un producto para finalizar la venta");
         }
     }
 
@@ -268,23 +283,20 @@ public class BeanVentas implements Serializable {
         for (VentasProductos vp : venta.getListaProductos()) {
             int maximo = 20;
             String cad = "";
-            StringBuilder nombreProducto =  new StringBuilder(vp.getNombreProducto());
-            if (nombreProducto.length() >maximo) 
-            {
+            StringBuilder nombreProducto = new StringBuilder(vp.getNombreProducto());
+            if (nombreProducto.length() > maximo) {
                 cad = nombreProducto.substring(0, maximo);
-            }else if(nombreProducto.length() < maximo)
-            {
-                int dif = maximo-nombreProducto.length();
-                System.out.println("dif: "+dif);
-                System.out.println("maximo: "+maximo);
-                System.out.println("tam: "+nombreProducto.length());
-                
-                for(int i=0;i<=dif+6;i++)
-                {
+            } else if (nombreProducto.length() < maximo) {
+                int dif = maximo - nombreProducto.length();
+                System.out.println("dif: " + dif);
+                System.out.println("maximo: " + maximo);
+                System.out.println("tam: " + nombreProducto.length());
+
+                for (int i = 0; i <= dif + 6; i++) {
                     nombreProducto.append(" ");
                 }
-                System.out.println("len: "+nombreProducto.length());
-                cad= nombreProducto.toString();
+                System.out.println("len: " + nombreProducto.length());
+                cad = nombreProducto.toString();
             }
             String cadena = cad + "   " + vp.getCantidad().toString() + "   " + nf.format(vp.getPrecioVenta()).toString() + "   " + nf.format(vp.getTotalProducto()).toString();
             System.out.println("N: " + cadena);

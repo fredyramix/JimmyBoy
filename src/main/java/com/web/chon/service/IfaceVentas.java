@@ -23,6 +23,8 @@ public interface IfaceVentas {
     public int updateVenta(Ventas venta);
 
     public int cancelarVenta(Ventas venta);
+    
+    public int cancelarVentaProducto(Ventas venta);
 
     public int finalizarVenta(Ventas venta);
 
