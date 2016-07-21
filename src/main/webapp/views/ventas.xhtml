@@ -15,6 +15,12 @@
         <script>
             var hiddenCode = "#{beanVenta.viewEstate}";
         </script>
+        <p:confirmDialog  global="true" showEffect="fade" hideEffect="fade">
+            <div class="alignCenter">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton  value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </div>
+        </p:confirmDialog>
         <h:form id="formContent" >
             <p:messages id="messages" showIcon="false" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
             <p:panel >
@@ -112,17 +118,21 @@
                             </p:column>
                             <p:column headerText="Agregar Producto" width="60px;" class="alignRight">
                             <p:commandButton ajax="true"  oncomplete="PF('dlg2').show();" update =":formContent" icon="ui-icon-triangle-1-e" styleClass="ui-priority-primary" >
+                            
                                 <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaAddProducto}"/>
+                            
                             </p:commandButton>
                         </p:column>
                            
                             <p:column headerText="Finalizar Venta" width="60px;" class="alignCenter">
                                 <p:commandButton id="editar" ajax="true" process="@this" action="#{beanVentas.finalizarVenta()}" icon="ui-icon-tag" styleClass="ui-priority-primary" update=":formContent">
+                                    <p:confirm header="Confirmación" message="¿Estás seguro de finalizar la venta?" icon="ui-icon-alert" /> 
                                     <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaFinalizar}"/>
                                 </p:commandButton>
                             </p:column>
                             <p:column headerText="Cancelar Venta" width="60px;" class="alignCenter">
                                 <p:commandButton id="cancelar" ajax="true" process="@this" action="#{beanVentas.cancelarVenta()}" icon="ui-icon-trash" styleClass="ui-priority-primary" update=":formContent">
+                                    <p:confirm header="Confirmación" message="¿Estás seguro de cancelar la venta?" icon="ui-icon-alert" />
                                     <f:setPropertyActionListener value="#{model}" target="#{beanVentas.ventaRemove}"/>
                                 </p:commandButton>
                             </p:column>
