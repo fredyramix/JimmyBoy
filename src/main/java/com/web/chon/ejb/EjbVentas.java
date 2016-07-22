@@ -72,7 +72,7 @@ public class EjbVentas implements NegocioVentas{
 "from ventas v\n" +
 "inner join usuario u \n" +
 "on u.id_usuario_pk = v.id_mesero_fk\n" +
-"where v.ESTATUS_VENTAS = '"+idStatusVenta+"' and v.ID_SUCURSAL_FK='"+idSucursal+"' and TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') = '"+ fechaInicio +"' order by v.FECHA_INICIO");
+"where v.ESTATUS_VENTAS = '"+idStatusVenta+"' and v.ID_SUCURSAL_FK='"+idSucursal+"' and TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') = '"+ fechaInicio +"' order by v.NUMERO_MESA");
         query = em.createNativeQuery(cadena.toString());
 
         try {

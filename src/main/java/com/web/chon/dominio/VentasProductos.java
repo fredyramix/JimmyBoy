@@ -25,6 +25,7 @@ public class VentasProductos implements Serializable {
     private String nombreProducto;
     private int  count;
     private BigDecimal estatus;
+    private String idCategoria;
 
     public void reset() {
         idVentasProductosPk = null;
@@ -35,13 +36,24 @@ public class VentasProductos implements Serializable {
         precioVenta = null;
         totalProducto = null;
         nombreProducto=null;
+        idCategoria=null;
     }
 
     @Override
     public String toString() {
-        return "VentasProductos{" + "idVentasProductosPk=" + idVentasProductosPk + ", idVentasFk=" + idVentasFk + ", idProductoFk=" + idProductoFk + ", cantidad=" + cantidad + ", observaciones=" + observaciones + ", precioVenta=" + precioVenta + ", totalProducto=" + totalProducto + ", nombreProducto=" + nombreProducto + '}';
+        return "VentasProductos{" + "idVentasProductosPk=" + idVentasProductosPk + ", idVentasFk=" + idVentasFk + ", idProductoFk=" + idProductoFk + ", cantidad=" + cantidad + ", observaciones=" + observaciones + ", precioVenta=" + precioVenta + ", totalProducto=" + totalProducto + ", nombreProducto=" + nombreProducto + ", count=" + count + ", estatus=" + estatus + ", idCategoria=" + idCategoria + '}';
+    }
+    
+
+    public String getIdCategoria() {
+        return idCategoria;
     }
 
+    public void setIdCategoria(String idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    
     public BigDecimal getEstatus() {
         return estatus;
     }

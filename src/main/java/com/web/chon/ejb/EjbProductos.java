@@ -80,10 +80,9 @@ public class EjbProductos implements NegocioProductos{
             query.setParameter(1, producto.getNombreProducto());
             query.setParameter(2, producto.getDescripcionProducto());
             query.setParameter(3, producto.getIdCategoriaFk());
-            
-            query.setParameter(5, producto.getUrlImagen());
-            query.setParameter(6, producto.getPrecio());
-            query.setParameter(7, producto.getIdProductoPk());
+            query.setParameter(4, producto.getUrlImagen());
+            query.setParameter(5, producto.getPrecio());
+            query.setParameter(6, producto.getIdProductoPk());
             return query.executeUpdate();
 
         } catch (Exception ex) {
@@ -104,5 +103,27 @@ public class EjbProductos implements NegocioProductos{
         String lastId = query.getSingleResult().toString();
         return Integer.parseInt(lastId);
     }
-    
+
+    @Override
+    public List<Object[]> getProductosByIdCategoria(String idCategoria) {
+       try {
+           System.out.println("idCategoria: "+idCategoria);
+
+            Query query = em.createNativeQuery("SELECT p.ID_PRODUCTO_PK,p.NOMBRE_PRODUCTO,p.DESCRIPCION_PRODUCTO,\n" +
+"p.ID_CATEGORIA_FK,p.ESTATUS,p.URL_IMAGEN , c.NOMBRE_CATEGORIA,p.PRECIO,s.DESCRIPCION_STATUS\n" +
+"from productos p\n" +
+"inner join CATEGORIAS c\n" +
+"on c.ID_CATEGORIA_PK = p.ID_CATEGORIA_FK\n" +
+"inner join status s\n" +
+"on s.ID_PK = p.ESTATUS where p.id_categoria_fk='"+idCategoria+"' order by p.id_categoria_fk ");
+            List<Object[]> resultList = null;
+            System.out.println("Consulta: "+query);
+            resultList = query.getResultList();
+
+            return resultList;
+
+        } catch (Exception ex) {
+            Logger.getLogger(EjbProductos.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }}
 }

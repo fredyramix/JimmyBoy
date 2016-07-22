@@ -6,60 +6,58 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:pe="http://primefaces.org/ui/extensions"
-                xmlns:o="http://omnifaces.org/ui">
-
+                xmlns:pe="http://primefaces.org/ui/extensions">
     <ui:define name="content">
         <h:form id="formContent">
             <div>
                 <h3>#{beanProductos.title}</h3>
             </div>
-            <p:messages id="messages" showIcon="false" showDetail="false"  showSummary="false" autoUpdate="true" closable="true" />
-            <p:panel class="container-fluid" rendered="#{beanProductos.viewEstate=='init'}">
-                <div class="form-group" align="right">
-                    <p:commandButton value="Nuevo" update="formContent" ajax="true" action="#{beanProductos.viewNew}" icon="ui-icon-person" />
-                    <p:commandButton value="Eliminar" update="formContent" ajax="true" action="#{beanProductos.delete()}" icon="ui-icon-trash" disabled="true"/>
+
+            <p:messages id="messages" showIcon="false" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
+            <p:panel rendered="#{beanProductos.viewEstate=='init'}" style="border: 0px;">
+                <div class="container-fluid">
+                    <div class="form-group" align="right">
+                        <p:commandButton value="Nuevo" update="formContent" ajax="true" action="#{beanProductos.viewNew}" icon="ui-icon-person" />
+                        <p:commandButton value="Eliminar" update="formContent" ajax="true" action="#{beanProductos.delete()}" icon="ui-icon-trash" disabled="true"/>
+                    </div>
+                    <p:dataTable var="model" id="table" value="#{beanProductos.model}" styleClass="ui-datatable-hor-scroll"  scrollable="true" scrollHeight="200" emptyMessage="Productos.">
+                        <p:column headerText="Clave" width = "40px;" class="alignCenter">
+                            <h:outputText value="#{model.idProductoPk}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre de Producto" width ="120px;" class="alignCenter">
+                            <h:outputText value="#{model.nombreProducto}" />
+                        </p:column>
+
+
+                        <p:column headerText="Nombre Categoria" width = "120px;" class="alignCenter">
+                            <h:outputText value="#{model.nombreCategoria}" />
+                        </p:column>
+
+                        <p:column headerText="Descripción" width ="150px;" class="alignCenter">
+                            <h:outputText value="#{model.descripcionProducto}" />
+                        </p:column>
+                        <p:column headerText="Precio" width ="95px;" class="alignRight">
+                            <h:outputText value="#{model.precio}">
+                                <f:convertNumber type="currency" currencySymbol="$" />
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Editar" width ="45px;" class="alignCenter">
+                            <p:commandButton id="ajax" ajax="true"  action="#{beanProductos.searchById}" icon="ui-icon-pencil" styleClass="ui-priority-primary" update="formContent">
+                                <f:setPropertyActionListener value="#{model}" target="#{beanProductos.dataEdit}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
                 </div>
-                <p:dataTable var="model" id="table" value="#{beanProductos.model}" styleClass="ui-datatable-hor-scroll"  emptyMessage="Productos.">
-                    <p:column headerText="Clave" width = "40px;" class="alignCenter">
-                        <h:outputText value="#{model.idProductoPk}" />
-                    </p:column>
-
-                    <p:column headerText="Nombre de Producto" width ="120px;" class="alignCenter">
-                        <h:outputText value="#{model.nombreProducto}" />
-                    </p:column>
-
-                    <p:column headerText="Nombre Categoria" width = "120px;" class="alignCenter">
-                        <h:outputText value="#{model.nombreCategoria}" />
-                    </p:column>
-
-                    <p:column headerText="Descripción" width ="150px;" class="alignCenter">
-                        <h:outputText value="#{model.descripcionProducto}" />
-                    </p:column>
-
-                    <p:column headerText="Estatus" width ="95px;" class="alignCenter">
-                        <h:outputText value="#{model.nombreEstatus}" />
-                    </p:column>
-                    <p:column headerText="Precio" width ="95px;" class="alignRight">
-                        <h:outputText value="#{model.precio}">
-                                    <f:convertNumber type="currency" currencySymbol="$" />
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Editar" width ="45px;" class="alignCenter">
-                        <p:commandButton id="ajax" ajax="true"  action="#{beanProductos.searchById}" icon="ui-icon-pencil" styleClass="ui-priority-primary" update="formContent">
-                            <f:setPropertyActionListener value="#{model}" target="#{beanProductos.dataEdit}"/>
-                        </p:commandButton>
-                    </p:column>
-                </p:dataTable>
             </p:panel>
-                        <p:panel rendered="#{beanProductos.viewEstate=='searchById' || beanProductos.viewEstate=='new'}">
+            <p:panel rendered="#{beanProductos.viewEstate=='searchById' || beanProductos.viewEstate=='new'}">
                 <div class="container">
                     <div class="form-group" align="right">
                         <p:commandButton value="Guardar" update=":formContent" ajax="true" action="#{beanProductos.insert}" rendered="#{beanProductos.viewEstate=='new'}"/>
                         <p:commandButton value="Actualizar" update=":formContent" ajax="true" action="#{beanProductos.updateProducto}" rendered="#{beanProductos.viewEstate=='searchById'}"/>
                         <p:commandButton value="Atras" immediate="true" resetValues="true" update=":formContent" ajax="true" action="#{beanProductos.backView}" />
                     </div>
-                    
+
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
                         <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="txtNombre" value ="Nombre:" /> 
                         <p:inputText id="txtNombre" maxlength="100" class=" col-lg-4 col-md-4 col-sm-8 col-xs-12" value="#{beanProductos.data.nombreProducto}" required="true"
@@ -67,7 +65,7 @@
                             <pe:keyFilter regEx="/[a-z_0-9 ]/i"/>
                         </p:inputText>
                     </div>
-                    
+
                     <div class="col-lg-5 col-md-6 col-sm-12 col-xs-12 form-group">
                         <p:outputLabel class="col-lg-4 col-md-4 col-sm-4 col-xs-12"  for="comboCaegoria" value ="Categoria:"  /> 
                         <h:selectOneMenu  id="comboCaegoria" class=" col-lg-8 col-md-8 col-sm-8 col-xs-12" value="#{beanProductos.data.idCategoriaFk}" required="true">
@@ -79,22 +77,18 @@
                         <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="txtDesc" value ="Descripcion:" /> 
                         <p:inputText id="txtDesc" maxlength="250" class=" col-lg-4 col-md-4 col-sm-8 col-xs-12" value="#{beanProductos.data.descripcionProducto}" required="true"
                                      requiredMessage="Escribe una descripcion para el produco">
-                            <pe:keyFilter regEx="/[a-z_0-9 ,]/i"/>
+                            <pe:keyFilter regEx="/[a-z_0-9 , .]/i"/>
                         </p:inputText>
                     </div>
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
-                        <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="txtEstatus" value ="Estatus" /> 
-                        <p:inputText id="txtEstatus" maxlength="13" class=" col-lg-4 col-md-4 col-sm-8 col-xs-12" value="#{beanProductos.data.nombreEstatus}" readonly="true"
-                                     requiredMessage="" >
-                        </p:inputText>
-                    </div>
+
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
                         <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="precio" value ="Precio" /> 
-                        <p:inputText id="precio" maxlength="13" class="col-lg-1 col-md-4 col-sm-8 col-xs-12" value="#{beanProductos.data.precio}" required="true"
+                        <p:inputText id="precio" maxlength="5" class="col-lg-1 col-md-4 col-sm-8 col-xs-12" value="#{beanProductos.data.precio}" required="true"
                                      requiredMessage="Ingresa un precio para este producto" >
+                            <pe:keyFilter regEx="/[0-9_ .]/i"/>
                         </p:inputText>
                     </div>
-                    
+
                 </div>
             </p:panel>
         </h:form>

@@ -14,6 +14,7 @@ import java.util.ArrayList;
  */
 public interface IfaceProductos {
     public ArrayList<Productos> getProductos();
+    public ArrayList<Productos> getProductosByIdCategoria(String idCategoria);
     
     public Productos getProductoById(String idProducto);
     

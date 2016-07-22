@@ -10,7 +10,7 @@
 
     <ui:define name="content" id="content">
         <div>
-            <h3>#{beanVenta.title}</h3>
+            <h3>#{beanVentas.title}</h3>
         </div>
         <script>
             var hiddenCode = "#{beanVenta.viewEstate}";
@@ -45,7 +45,7 @@
                                             <f:selectItems value="#{beanVentas.listaMeseros}" var="meserito" itemLabel="#{meserito.nombreUsuario}" itemValue="#{meserito.idUsuarioPk}"/>
                                         </h:selectOneMenu>
                                         <f:facet name="footer">
-                                            <p:commandButton value="Iniciar Venta" update="formContent" action="#{beanVentas.addVenta()}" oncomplete="PF('dlg').hide();"/>
+                                            <p:commandButton value="Iniciar Venta" update=":formContent" action="#{beanVentas.addVenta()}"/>
                                         </f:facet>  
                                     </h:panelGrid>
                                 </p:dialog>
@@ -58,7 +58,15 @@
                             <div class="form-group" align="right">
                                 <p:dialog header="Agregar Producto a Pedido" widgetVar="dlg2" resizable="false">
                                     <h:panelGrid columns="1" cellpadding="5">
+                                        <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboCategorias" value ="Seleccione una categoria:" /> 
+                                        <h:selectOneMenu  id="comboCategorias" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.dataProductoNuevo.idCategoria}" >
+                                            <f:selectItem itemLabel="Selecciona una opción" itemValue=""  />
+                                            <f:selectItems value="#{beanVentas.listaCategorias}" var="cat" itemLabel="#{cat.nombreCategoria}" itemValue="#{cat.idCategorias}"/>
+                                            <p:ajax event="change" update=":formContent:comboProductos" listener="#{beanVentas.searchProductosByIdCategorias()}"/>
+                                        </h:selectOneMenu>
+                                        
                                         <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboProductos" value ="Seleccione un producto:" /> 
+                                       
                                         <h:selectOneMenu  id="comboProductos" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.dataProductoNuevo.idProductoFk}" >
                                             <f:selectItem itemLabel="Selecciona un Producto" itemValue=""  />
                                             <f:selectItems value="#{beanVentas.listaProductos}" var="pro" itemLabel="#{pro.nombreProducto}" itemValue="#{pro.idProductoPk}"/>
@@ -68,10 +76,10 @@
                                             <pe:keyFilter   regEx="/[1-9_]/i"/>
                                         </p:inputText>
                                         <h:outputLabel  value="Observaciones:" />
-                                        <p:inputTextarea rows="3" cols="20" value="#{beanVentas.dataProductoNuevo.observaciones}" />
+                                        <p:inputTextarea id="textarea" rows="3" cols="20" value="#{beanVentas.dataProductoNuevo.observaciones}" />
                                        
                                         <f:facet name="footer">
-                                            <p:commandButton value="Agregar a Pedido" update=":formContent" action="#{beanVentas.addVentaProducto()}" oncomplete="PF('dlg2').hide();"/>
+                                            <p:commandButton value="Agregar a Pedido" update=":formContent:comboProductos formContent:cantidadProducto formContent:textarea :formContent:table" action="#{beanVentas.addVentaProducto()}" />
                                         </f:facet>  
                                     </h:panelGrid>
                                 </p:dialog>
@@ -86,7 +94,7 @@
                     </div>
 
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <p:dataTable id="table" var="model"
+                        <p:dataTable id="table" var="model" scrollable="true" scrollHeight="300"
                                      rowIndexVar="rowIndex" value="#{beanVentas.listaVentas}" styleClass="ui-datatable-hor-scroll"  emptyMessage="No se encontraron Registros." rendered="#{beanVentas.viewEstate =='init'}">
                             <p:column style="width:16px">
                                 <p:rowToggler />
@@ -105,7 +113,7 @@
                             </p:column>
                             <p:column headerText="Hora de Inicio" width="100px;" class="alignCenter">
                                 <h:outputText value="#{model.fechaInicio}" >
-                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="Mesero" width="150px;" class="alignCenter">
@@ -157,7 +165,7 @@
                                                 <f:convertNumber type="currency" currencySymbol="$" />
                                             </h:outputText>
                                         </p:column>
-                                        <p:column headerText="P/M" width="60px;" class="alignRight">
+                                        <p:column headerText="Importe" width="60px;" class="alignRight">
                                             <h:outputText value="#{item.totalProducto}">
                                                 <f:convertNumber type="currency" currencySymbol="$" />
                                             </h:outputText>

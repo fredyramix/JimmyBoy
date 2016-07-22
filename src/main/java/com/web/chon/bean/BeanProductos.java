@@ -28,10 +28,12 @@ import org.springframework.stereotype.Component;
 public class BeanProductos implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
-    @Autowired private IfaceProductos ifaceProductos;
-    @Autowired private IfaceCategorias ifaceCategorias;
-    
+
+    @Autowired
+    private IfaceProductos ifaceProductos;
+    @Autowired
+    private IfaceCategorias ifaceCategorias;
+
     private String title = "";
     public String viewEstate = "";
     public Productos data;
@@ -39,12 +41,9 @@ public class BeanProductos implements Serializable {
     private ArrayList<Productos> model;
     private ArrayList<Productos> selectedProducto;
     private ArrayList<Categorias> lstCategorias;
-    
-    
-    
+
     @PostConstruct
-    public void init() 
-    {
+    public void init() {
         data = new Productos();
         model = new ArrayList<Productos>();
         selectedProducto = new ArrayList<Productos>();
@@ -52,52 +51,45 @@ public class BeanProductos implements Serializable {
         lstCategorias = ifaceCategorias.getCategorias();
         setTitle("Catalogo de Productos");
         setViewEstate("init");
-        
-        
+
     }
-    public void viewNew()
-    {
+
+    public void viewNew() {
         System.out.println("Enro a view new");
         data = new Productos();
         setTitle("Alta de Productos");
         setViewEstate("new");
     }
-    public void update() {
-        
-    }
+
     public void backView() {
         setTitle("Catalogo de Productos");
         setViewEstate("init");
     }
 
-    public void delete()
-    {
-        
+    public void delete() {
+
     }
-    public void insert()
-    {
+
+    public void insert() {
         data.setIdProductoPk(TiempoUtil.rellenaEspacios(ifaceProductos.getLastIdCategoria()));
         data.setEstatus(new BigDecimal(1));
-        if(ifaceProductos.insertarProducto(data)==1)
-        {
+        if (ifaceProductos.insertarProducto(data) == 1) {
             JsfUtil.addSuccessMessageClean("Producto Agregado correctamente");
             model = ifaceProductos.getProductos();
             data.reset();
-            setTitle("Catalogo de Productos");
-        setViewEstate("init");
-        }
-        else
-        {
+//            setTitle("Catalogo de Productos");
+//            setViewEstate("init");
+        } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema");
         }
-        
+
     }
-    public void edit()
-    {
-        
+
+    public void edit() {
+
     }
-    public void searchById()
-    {
+
+    public void searchById() {
         data.setIdProductoPk(dataEdit.getIdProductoPk());
         data.setIdCategoriaFk(dataEdit.getIdCategoriaFk());
         data.setDescripcionProducto(dataEdit.getDescripcionProducto());
@@ -105,21 +97,18 @@ public class BeanProductos implements Serializable {
         data.setNombreProducto(dataEdit.getNombreProducto());
         data.setPrecio(dataEdit.getPrecio());
         viewEstate = "searchById";
-        
+
     }
-    public void updateProducto()
-    {
-         if(ifaceProductos.updateProducto(data)==1)
-        {
+
+    public void updateProducto() {
+        if (ifaceProductos.updateProducto(data) == 1) {
             JsfUtil.addSuccessMessageClean("Producto Actualizado correctamente");
             model = ifaceProductos.getProductos();
             data.reset();
             dataEdit.reset();
-         setTitle("Catalogo de Productos");
-        setViewEstate("init");
-        }
-        else
-        {
+            setTitle("Catalogo de Productos");
+            setViewEstate("init");
+        } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema");
         }
     }
@@ -179,6 +168,5 @@ public class BeanProductos implements Serializable {
     public void setDataEdit(Productos dataEdit) {
         this.dataEdit = dataEdit;
     }
-    
-   
+
 }

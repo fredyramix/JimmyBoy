@@ -118,4 +118,35 @@ public class ServiceProductos implements IfaceProductos {
         
     }
 
+    @Override
+    public ArrayList<Productos> getProductosByIdCategoria(String idCategoria) {
+       try {
+            getEjb();
+            ArrayList<Productos> lstProducto = new ArrayList<Productos>();
+            List<Object[]> lstObject = ejb.getProductosByIdCategoria(idCategoria);
+            for (Object[] obj : lstObject) {
+
+                Productos producto = new Productos();
+                
+                producto.setIdProductoPk(obj[0] == null ? "" : obj[0].toString());
+                producto.setNombreProducto(obj[1] == null ? "" : obj[1].toString());
+                producto.setDescripcionProducto(obj[2] == null ? "" : obj[2].toString());
+                producto.setIdCategoriaFk(obj[3] == null ? "" : obj[3].toString());
+                producto.setEstatus(obj[4] == null ? null : new BigDecimal(obj[4].toString()));
+                producto.setUrlImagen(obj[5] == null ? "" : obj[5].toString());
+                producto.setNombreCategoria(obj[6] == null ? "" : obj[6].toString());
+                producto.setPrecio(obj[7] == null ? null : new BigDecimal(obj[7].toString()));
+                producto.setNombreEstatus(obj[8] == null ? "" : obj[8].toString());
+                
+                lstProducto.add(producto);
+            }
+
+            return lstProducto;
+        } catch (Exception ex) {
+            Logger.getLogger(ServiceProducto.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    
+    }
+
 }

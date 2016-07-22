@@ -21,5 +21,6 @@ public interface NegocioProductos {
     public int insertarProducto(Productos producto);
     public int updateProducto(Productos producto);
     public int getLastIdCategoria();
+    public List<Object[]> getProductosByIdCategoria(String idCategoria);
     
 }

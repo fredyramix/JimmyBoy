@@ -5,11 +5,13 @@
  */
 package com.web.chon.bean;
 
+import com.web.chon.dominio.Categorias;
 import com.web.chon.dominio.Productos;
 import com.web.chon.dominio.Usuario;
 import com.web.chon.dominio.Ventas;
 import com.web.chon.dominio.VentasProductos;
 import com.web.chon.service.IfaceCatUsuario;
+import com.web.chon.service.IfaceCategorias;
 import com.web.chon.service.IfaceProductos;
 import com.web.chon.service.IfaceVentas;
 import com.web.chon.service.IfaceVentasProductos;
@@ -64,7 +66,10 @@ public class BeanVentas implements Serializable {
     private IfaceVentasProductos ifaceVentasProductos;
     @Autowired
     private IfaceProductos ifaceProductos;
-
+    @Autowired
+    private IfaceCategorias ifaceCategorias;
+    
+    private ArrayList<Categorias> listaCategorias;
     private ArrayList<Ventas> listaVentas;
     private ArrayList<Ventas> listaVentasHistorial;
     private ArrayList<Usuario> listaMeseros;
@@ -106,28 +111,41 @@ public class BeanVentas implements Serializable {
         listaVentas = new ArrayList<Ventas>();
         listaMeseros = new ArrayList<Usuario>();
         listaProductos = new ArrayList<Productos>();
+        listaCategorias = new ArrayList<Categorias>();
         venta = new Ventas();
         status = 2;
-        setTitle("Ventas");
+        setTitle("Realizar Pedidos");
         setViewEstate("init");
         hoy = new Date();
         dataProductoNuevo = new VentasProductos();
         listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
         listaMeseros = ifaceCatUsuario.getMeseros();
-        listaProductos = ifaceProductos.getProductos();
+        //listaProductos = ifaceProductos.getProductos();
+        listaCategorias = ifaceCategorias.getCategorias();
         listaVentasHistorial = new ArrayList<Ventas>();
 
     }
+    public void searchProductosByIdCategorias()
+    {
+        listaProductos=ifaceProductos.getProductosByIdCategoria(dataProductoNuevo.getIdCategoria());
+    }
 
     public void addVentaProducto() {
+        if(dataProductoNuevo.getIdProductoFk()!=null){
         BigDecimal suma = new BigDecimal(0);
         Ventas temporal = new Ventas();
+        
         dataProductoNuevo.setIdVentasFk(ventaAddProducto.getIdVentaPk());
+        dataProductoNuevo.setIdCategoria(dataProductoNuevo.getIdCategoria());
         dataProductoNuevo.setIdVentasProductosPk(new BigDecimal(ifaceVentasProductos.getNextVal()));
         dataProductoNuevo.setIdProductoFk(dataProductoNuevo.getIdProductoFk());
         dataProductoNuevo.setEstatus(new BigDecimal(1));
         dataProductoNuevo.setObservaciones(dataProductoNuevo.getObservaciones());
         dataProductoNuevo.setPrecioVenta(getPrecio(dataProductoNuevo.getIdProductoFk()));
+        if(dataProductoNuevo.getCantidad()==null || dataProductoNuevo.getCantidad().intValue()==0 )
+        {
+            dataProductoNuevo.setCantidad(new BigDecimal(1));
+        }
         dataProductoNuevo.setCantidad(dataProductoNuevo.getCantidad());
         dataProductoNuevo.setTotalProducto(dataProductoNuevo.getCantidad().multiply(dataProductoNuevo.getPrecioVenta(), MathContext.UNLIMITED));
         System.out.println("Producto: " + dataProductoNuevo.toString());
@@ -149,6 +167,11 @@ public class BeanVentas implements Serializable {
             dataProductoNuevo.reset();
         } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema conacar al adminisrador");
+        }
+        }
+        else
+        {
+            JsfUtil.addErrorMessageClean("Agregar un producto al menos");
         }
     }
 
@@ -640,4 +663,13 @@ public class BeanVentas implements Serializable {
         this.pathFileJasper = pathFileJasper;
     }
 
+    public ArrayList<Categorias> getListaCategorias() {
+        return listaCategorias;
+    }
+
+    public void setListaCategorias(ArrayList<Categorias> listaCategorias) {
+        this.listaCategorias = listaCategorias;
+    }
+
+    
 }
