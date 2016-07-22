@@ -34,7 +34,7 @@ public class EjbProductos implements NegocioProductos{
 "inner join CATEGORIAS c\n" +
 "on c.ID_CATEGORIA_PK = p.ID_CATEGORIA_FK\n" +
 "inner join status s\n" +
-"on s.ID_PK = p.ESTATUS");
+"on s.ID_PK = p.ESTATUS order by p.id_categoria_fk");
             List<Object[]> resultList = null;
             resultList = query.getResultList();
 

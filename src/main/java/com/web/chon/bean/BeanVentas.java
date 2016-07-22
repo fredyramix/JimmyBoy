@@ -217,7 +217,7 @@ public class BeanVentas implements Serializable {
                 }
                 venta.setIdVentaPk(new BigDecimal(ifaceVentas.getNextVal()));
                 venta.setIdSucursalFk(new BigDecimal(1));
-                venta.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))));
+                venta.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))+1));
                 venta.setEstatusVenta(new BigDecimal(1));
                 System.out.println("Venta: " + venta.toString());
                 if (ifaceVentas.insertarVenta(venta) != 0) {
