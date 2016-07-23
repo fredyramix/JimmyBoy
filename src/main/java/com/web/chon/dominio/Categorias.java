@@ -12,10 +12,17 @@ import java.io.Serializable;
  * @author freddy
  */
 public class Categorias implements Serializable {
+
     private static final long serialVersionUID = 1L;
     private String idCategorias;
     private String nombreCategoria;
     private String descripcionCategoria;
+
+    public void reset() {
+        idCategorias = null;
+        nombreCategoria = null;
+        descripcionCategoria = null;
+    }
 
     @Override
     public String toString() {
@@ -45,7 +52,5 @@ public class Categorias implements Serializable {
     public void setDescripcionCategoria(String descripcionCategoria) {
         this.descripcionCategoria = descripcionCategoria;
     }
-    
-    
-    
+
 }

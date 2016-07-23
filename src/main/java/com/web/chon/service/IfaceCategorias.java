@@ -14,4 +14,15 @@ import java.util.ArrayList;
  */
 public interface IfaceCategorias {
     public ArrayList<Categorias> getCategorias();
+    
+    public Categorias getCategoriaById(String idProducto);
+    
+    public int deleteCategoria(String idProducto);
+    
+    public int updateCategoria(Categorias categoria);
+    
+    public int insertarCategoria(Categorias categoria );
+    
+    public int getLastIdCategoria();
+     
 }

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="./../templates/main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+    <ui:define name="content">
+        <h:form id="formContent">
+            <div>
+                <h3>#{beanCategorias.title}</h3>
+            </div>
+
+            <p:messages id="messages" showIcon="false" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
+            <p:panel rendered="#{beanCategorias.viewEstate=='init'}" style="border: 0px;">
+                <div class="container-fluid">
+                    <div class="form-group" align="right">
+                        <p:commandButton value="Nuevo" update="formContent" ajax="true" action="#{beanCategorias.viewNew}" icon="ui-icon-person" />
+                        <p:commandButton value="Eliminar" update="formContent" ajax="true" action="#{beanCategorias.delete()}" icon="ui-icon-trash" disabled="true"/>
+                    </div>
+                    <p:dataTable var="model" id="table" value="#{beanCategorias.model}" styleClass="ui-datatable-hor-scroll"  scrollable="true" scrollHeight="200" emptyMessage="Productos.">
+                        <p:column headerText="Clave" width = "40px;" class="alignCenter">
+                            <h:outputText value="#{model.idCategorias}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre de Categoria" width ="120px;" class="alignCenter">
+                            <h:outputText value="#{model.nombreCategoria}" />
+                        </p:column>
+
+
+                        <p:column headerText="Descripción" width ="150px;" class="alignCenter">
+                            <h:outputText value="#{model.descripcionCategoria}" />
+                        </p:column>
+                        
+                        <p:column headerText="Editar" width ="45px;" class="alignCenter">
+                            <p:commandButton id="ajax" ajax="true"  action="#{beanCategorias.searchById}" icon="ui-icon-pencil" styleClass="ui-priority-primary" update="formContent">
+                                <f:setPropertyActionListener value="#{model}" target="#{beanCategorias.dataEdit}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:panel>
+            <p:panel rendered="#{beanCategorias.viewEstate=='searchById' || beanCategorias.viewEstate=='new'}">
+                <div class="container">
+                    <div class="form-group" align="right">
+                        <p:commandButton value="Guardar" update=":formContent" ajax="true" action="#{beanCategorias.insert}" rendered="#{beanCategorias.viewEstate=='new'}"/>
+                        <p:commandButton value="Actualizar" update=":formContent" ajax="true" action="#{beanCategorias.updateProducto}" rendered="#{beanCategorias.viewEstate=='searchById'}"/>
+                        <p:commandButton value="Atras" immediate="true" resetValues="true" update=":formContent" ajax="true" action="#{beanCategorias.backView}" />
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
+                        <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="txtNombre" value ="Nombre:" /> 
+                        <p:inputText id="txtNombre" maxlength="100" class=" col-lg-4 col-md-4 col-sm-8 col-xs-12" value="#{beanCategorias.data.nombreCategoria}" required="true"
+                                     requiredMessage="Ingresa un nombre para el producto">
+                            <pe:keyFilter regEx="/[a-z_0-9 ]/i"/>
+                        </p:inputText>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 form-group">
+                        <p:outputLabel class="col-lg-3 col-md-3 col-sm-4 col-xs-12"  for="txtDesc" value ="Descripcion:" /> 
+                        <p:inputText id="txtDesc" maxlength="250" class=" col-lg-4 col-md-4 col-sm-8 col-xs-12" value="#{beanCategorias.data.descripcionCategoria}" required="true"
+                                     requiredMessage="Escribe una descripcion para el produco">
+                            <pe:keyFilter regEx="/[a-z_0-9 , .]/i"/>
+                        </p:inputText>
+                    </div>
+
+                    
+
+                </div>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+

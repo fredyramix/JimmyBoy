@@ -49,6 +49,56 @@ public class ServiceCategorias implements IfaceCategorias {
         }
         return lstCategorias;
     }
+
+    @Override
+    public Categorias getCategoriaById(String idCategorias) {
+       getEjb();
+        List<Object[]> lstObject = new ArrayList<Object[]>();
+        lstObject = ejb.getCategoriaById(idCategorias);
+        Categorias categoria = new Categorias();
+        for (Object[] obj : lstObject) {
+            categoria.setIdCategorias(obj[0] == null ? "" : obj[0].toString());
+            categoria.setNombreCategoria(obj[1] == null ? "" : obj[1].toString());
+            categoria.setDescripcionCategoria(obj[2] == null ? "" : obj[2].toString());
+        }
+
+        return categoria;
+    
+    }
+
+    @Override
+    public int deleteCategoria(String idProducto) {
+        getEjb();
+        return ejb.deleteCategoria(idProducto);
+    }
+
+    @Override
+    public int updateCategoria(Categorias categoria) {
+        getEjb();
+        return ejb.updateCategoria(categoria);
+                
+    }
+
+    @Override
+    public int insertarCategoria(Categorias categoria) {
+        getEjb();;
+        return ejb.insertarCategoria(categoria);
+    }
+
+    @Override
+    public int getLastIdCategoria() {
+       
+        try {
+            getEjb();
+            int idCategoria =0;
+            idCategoria = ejb.getLastIdCategoria();
+            return idCategoria;
+        } catch (Exception ex) {
+            Logger.getLogger(ServiceCategorias.class.getName()).log(Level.SEVERE, null, ex);
+            return 1;
+        }
+    
+    }
     
     
     
