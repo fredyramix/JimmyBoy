@@ -96,6 +96,9 @@ public class BeanVentas implements Serializable {
     private int status;
     private boolean enableCalendar;
     private BigDecimal totalRelacion;
+    private BigDecimal idMeseroFk;
+    
+    private Productos producto;
 
     //VARIABLES DE TICKET
     private StreamedContent media;
@@ -114,6 +117,7 @@ public class BeanVentas implements Serializable {
         listaCategorias = new ArrayList<Categorias>();
         venta = new Ventas();
         status = 2;
+        producto = new Productos();
         setTitle("Realizar Pedidos");
         setViewEstate("init");
         hoy = new Date();
@@ -131,14 +135,15 @@ public class BeanVentas implements Serializable {
     }
 
     public void addVentaProducto() {
-        if(dataProductoNuevo.getIdProductoFk()!=null){
+        if(producto.getIdProductoPk()!=null){
         BigDecimal suma = new BigDecimal(0);
         Ventas temporal = new Ventas();
         
         dataProductoNuevo.setIdVentasFk(ventaAddProducto.getIdVentaPk());
         dataProductoNuevo.setIdCategoria(dataProductoNuevo.getIdCategoria());
         dataProductoNuevo.setIdVentasProductosPk(new BigDecimal(ifaceVentasProductos.getNextVal()));
-        dataProductoNuevo.setIdProductoFk(dataProductoNuevo.getIdProductoFk());
+        dataProductoNuevo.setIdProductoFk(producto.getIdProductoPk());
+        dataProductoNuevo.setNombreProducto(producto.getIdProductoPk());
         dataProductoNuevo.setEstatus(new BigDecimal(1));
         dataProductoNuevo.setObservaciones(dataProductoNuevo.getObservaciones());
         dataProductoNuevo.setPrecioVenta(getPrecio(dataProductoNuevo.getIdProductoFk()));
@@ -165,14 +170,21 @@ public class BeanVentas implements Serializable {
 
             listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
             dataProductoNuevo.reset();
+            producto  = new Productos();
         } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema conacar al adminisrador");
+        
         }
         }
         else
         {
             JsfUtil.addErrorMessageClean("Agregar un producto al menos");
         }
+    }
+    public ArrayList<Productos> autoComplete(String nombreProducto) {
+        listaProductos = ifaceProductos.getProductoByNombre(nombreProducto.toUpperCase());
+        return listaProductos;
+
     }
 
     public BigDecimal getPrecio(String idProducto) {
@@ -311,9 +323,6 @@ public class BeanVentas implements Serializable {
                 cad = nombreProducto.substring(0, maximo);
             } else if (nombreProducto.length() < maximo) {
                 int dif = maximo - nombreProducto.length();
-                System.out.println("dif: " + dif);
-                System.out.println("maximo: " + maximo);
-                System.out.println("tam: " + nombreProducto.length());
 
                 for (int i = 0; i <= dif + 6; i++) {
                     nombreProducto.append(" ");
@@ -321,16 +330,29 @@ public class BeanVentas implements Serializable {
                 System.out.println("len: " + nombreProducto.length());
                 cad = nombreProducto.toString();
             }
-            String cadena = cad + "   " + vp.getCantidad().toString() + "   " + nf.format(vp.getPrecioVenta()).toString() + "   " + nf.format(vp.getTotalProducto()).toString();
-            System.out.println("N: " + cadena);
+            String cadena = vp.getCantidad().toString() + "   " +cad  + "   " + nf.format(vp.getPrecioVenta()).toString() + "   " + nf.format(vp.getTotalProducto()).toString();
             productos.add(cadena);
 
         }
 
         String totalVentaStr = numeroLetra.Convertir(df.format(venta.getTotal()), true);
-        putValues(TiempoUtil.getFechaDDMMYYYYHHMM(date), productos, totalVentaStr, venta);
+        putValues(TiempoUtil.getFechaDDMMYYYYHHMM(date), productos, totalVentaStr, venta,nf.format(venta.getTotal()));
 
     }
+    private void putValues(String dateTime, ArrayList<String> items, String totalVentaStr, Ventas v,String totalisimo) {
+
+        paramReport.put("fechaVenta", dateTime);
+        paramReport.put("folio", v.getFolio().toString());
+        paramReport.put("productos", items);
+        paramReport.put("ventaTotal",totalisimo);
+        paramReport.put("totalLetra", totalVentaStr);
+        paramReport.put("mesa", v.getNumeroMesa().toString());
+        paramReport.put("mesero", v.getNombreMesero());
+        paramReport.put("per", v.getCantidadPersonas().toString());
+        paramReport.put("abre", TiempoUtil.getFechaDDMMYYYYHHMM(v.getFechaInicio()));
+        paramReport.put("cie", TiempoUtil.getFechaDDMMYYYYHHMM(v.getFechaFin()));
+    }
+
 
     public void generateReport(int idVenta, int folioVenta) {
         JRExporter exporter = null;
@@ -364,17 +386,7 @@ public class BeanVentas implements Serializable {
 
     }
 
-    private void putValues(String dateTime, ArrayList<String> items, String totalVentaStr, Ventas v) {
-
-        paramReport.put("fechaVenta", dateTime);
-        paramReport.put("folio", v.getFolio().toString());
-        paramReport.put("productos", items);
-        paramReport.put("ventaTotal", v.getTotal().toString());
-        paramReport.put("totalLetra", totalVentaStr);
-        paramReport.put("mesa", v.getNumeroMesa().toString());
-        paramReport.put("mesero", v.getNombreMesero());
-    }
-
+    
     public void verificarCombo() {
         if (filtro == -1) {
             //se habilitan los calendarios.
@@ -671,5 +683,19 @@ public class BeanVentas implements Serializable {
         this.listaCategorias = listaCategorias;
     }
 
-    
+    public BigDecimal getIdMeseroFk() {
+        return idMeseroFk;
+    }
+
+    public void setIdMeseroFk(BigDecimal idMeseroFk) {
+        this.idMeseroFk = idMeseroFk;
+    }
+
+    public Productos getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Productos producto) {
+        this.producto = producto;
+    }
 }

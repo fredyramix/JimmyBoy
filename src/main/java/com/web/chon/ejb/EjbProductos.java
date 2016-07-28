@@ -94,7 +94,10 @@ public class EjbProductos implements NegocioProductos{
 
     @Override
     public List<Object[]> getProductosById(String idProducto) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Query query = em.createNativeQuery("SELECT * FROM PRODUCTOS WHERE ID_PRODUCTO_PK = ?");
+        query.setParameter(1, idProducto);
+        
+        return query.getResultList();
     }
 
     @Override
@@ -126,4 +129,11 @@ public class EjbProductos implements NegocioProductos{
             Logger.getLogger(EjbProductos.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }}
+    @Override
+    public List<Object[]> getProductoByNombre(String nombre) {
+        Query query = em.createNativeQuery("SELECT * FROM PRODUCTOS WHERE UPPER(NOMBRE_PRODUCTO) LIKE '%"+nombre+"%'");
+        
+        return query.getResultList();
+    
+    }
 }

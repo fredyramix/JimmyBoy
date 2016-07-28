@@ -17,6 +17,7 @@ import javax.ejb.Remote;
 public interface NegocioProductos {
     public List<Object[]> getProductos();
     public List<Object[]> getProductosById(String idProducto);
+    public List<Object[]> getProductoByNombre(String nombre);
     public int deleteProducto(String idProducto);
     public int insertarProducto(Productos producto);
     public int updateProducto(Productos producto);
@@ -24,3 +25,4 @@ public interface NegocioProductos {
     public List<Object[]> getProductosByIdCategoria(String idCategoria);
     
 }
+

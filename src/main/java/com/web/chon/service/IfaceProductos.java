@@ -23,6 +23,7 @@ public interface IfaceProductos {
     public int updateProducto(Productos producto);
     
     public int insertarProducto(Productos producto );
+    public ArrayList<Productos> getProductoByNombre(String nombre);
     
     public int getLastIdCategoria();
 }

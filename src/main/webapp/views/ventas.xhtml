@@ -58,19 +58,29 @@
                             <div class="form-group" align="right">
                                 <p:dialog header="Agregar Producto a Pedido" widgetVar="dlg2" resizable="false">
                                     <h:panelGrid columns="1" cellpadding="5">
-                                        <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboCategorias" value ="Seleccione una categoria:" /> 
-                                        <h:selectOneMenu  id="comboCategorias" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.dataProductoNuevo.idCategoria}" >
+                                        <!--<p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboCategorias" value ="Seleccione una categoria:" /> 
+                                        <h:selectOneMenu  id="comboCategorias" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="{beanVentas.dataProductoNuevo.idCategoria}" >
                                             <f:selectItem itemLabel="Selecciona una opción" itemValue=""  />
-                                            <f:selectItems value="#{beanVentas.listaCategorias}" var="cat" itemLabel="#{cat.nombreCategoria}" itemValue="#{cat.idCategorias}"/>
-                                            <p:ajax event="change" update=":formContent:comboProductos" listener="#{beanVentas.searchProductosByIdCategorias()}"/>
+                                            <f:selectItems value="{beanVentas.listaCategorias}" var="cat" itemLabel="{cat.nombreCategoria}" itemValue="{cat.idCategorias}"/>
+                                            <p:ajax event="change" update=":formContent:comboProductos" listener="{beanVentas.searchProductosByIdCategorias()}"/>
                                         </h:selectOneMenu>
                                         
                                         <p:outputLabel class="col-lg-12 col-md-2 col-sm-3 col-xs-12 alignCenter"  for="comboProductos" value ="Seleccione un producto:" /> 
                                        
-                                        <h:selectOneMenu  id="comboProductos" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#{beanVentas.dataProductoNuevo.idProductoFk}" >
+                                        <h:selectOneMenu  id="comboProductos" class=" col-lg-12 col-md-2 col-sm-3 col-xs-12" value="#beanVentas.dataProductoNuevo.idProductoFk}" >
                                             <f:selectItem itemLabel="Selecciona un Producto" itemValue=""  />
-                                            <f:selectItems value="#{beanVentas.listaProductos}" var="pro" itemLabel="#{pro.nombreProducto}" itemValue="#{pro.idProductoPk}"/>
-                                        </h:selectOneMenu>
+                                            <f:selectItems value="{beanVentas.listaProductos}" var="pro" itemLabel="{pro.nombreProducto}" itemValue="{pro.idProductoPk}"/>
+                                        </h:selectOneMenu>-->
+                                        
+                                        <div class="col-lg-3 col-md-6 col-sm-12 col-xs-12" >
+                                            <p:outputLabel class="col-lg-3 col-md-6 col-sm-12 col-xs-12"  for="autocompleteProducto" value ="Producto:" /> 
+                                            <p:autoComplete  placeholder="Seleccione un Producto" id="autocompleteProducto"  required="false" requiredMessage="Ingresa un valor para el campo Producto." styleClass="autocomplete-input-text-media"
+                                                             value="#{beanVentas.producto}" completeMethod="#{beanVentas.autoComplete}" forceSelection="true" var="producto"  inputStyle="width: 180px"
+                                                             itemLabel="#{producto.nombreProducto}"
+                                                             itemValue="#{producto.idProductoPk}" converter="#{productosConverter}">
+                                            </p:autoComplete>
+                                            <pe:keyFilter for="autocompleteProducto" regEx="/[a-z0-9-_Ã±\s]/i" />
+                                        </div>
                                         <h:outputLabel for="cantidadProducto" value="Cantidad:" />
                                         <p:inputText id="cantidadProducto"  maxlength="2" value="#{beanVentas.dataProductoNuevo.cantidad}" >
                                             <pe:keyFilter   regEx="/[1-9_]/i"/>
@@ -79,7 +89,7 @@
                                         <p:inputTextarea id="textarea" rows="3" cols="20" value="#{beanVentas.dataProductoNuevo.observaciones}" />
                                        
                                         <f:facet name="footer">
-                                            <p:commandButton value="Agregar a Pedido" update=":formContent:comboProductos formContent:cantidadProducto formContent:textarea :formContent:table" action="#{beanVentas.addVentaProducto()}" />
+                                            <p:commandButton value="Agregar a Pedido" update=":formContent:autocompleteProducto formContent:cantidadProducto formContent:textarea :formContent:table" action="#{beanVentas.addVentaProducto()}" />
                                         </f:facet>  
                                     </h:panelGrid>
                                 </p:dialog>
