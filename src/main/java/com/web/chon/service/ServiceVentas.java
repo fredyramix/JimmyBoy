@@ -117,10 +117,10 @@ public class ServiceVentas implements IfaceVentas {
     }
 
     @Override
-    public ArrayList<Ventas> getVentas(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta) {
+    public ArrayList<Ventas> getVentas(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta,BigDecimal idMesero) {
         getEjb();
         ArrayList<Ventas> lstVenta = new ArrayList<Ventas>();
-        List<Object[]> lstObject = ejb.getVentas(TiempoUtil.getFechaDDMMYYYY(fechaInicio), TiempoUtil.getFechaDDMMYYYY(fechaFin), idSucursal, idStatusVenta);
+        List<Object[]> lstObject = ejb.getVentas(TiempoUtil.getFechaDDMMYYYY(fechaInicio), TiempoUtil.getFechaDDMMYYYY(fechaFin), idSucursal, idStatusVenta,idMesero);
         for (Object[] object : lstObject) {
 
             Ventas venta = new Ventas();

@@ -31,7 +31,7 @@ public interface IfaceVentas {
     public int getNextFolioByIdSucursal(BigDecimal idSucursal);
     
 
-    public ArrayList<Ventas> getVentas(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta);
+    public ArrayList<Ventas> getVentas(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta,BigDecimal idMesero);
 
     public ArrayList<Ventas> getVentasByInterval(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta);
 

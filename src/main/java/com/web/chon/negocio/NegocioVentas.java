@@ -24,6 +24,6 @@ public interface NegocioVentas {
     public int getNextFolioByIdSucursal(BigDecimal idSucursal);
     public int finalizarVenta(Ventas venta);
     public int cancelarVentaProducto(Ventas venta);
-    public List<Object[]> getVentas(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta);
+    public List<Object[]> getVentas(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta,BigDecimal idMesero);
     public List<Object[]> getVentasByInterval(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta); 
 }

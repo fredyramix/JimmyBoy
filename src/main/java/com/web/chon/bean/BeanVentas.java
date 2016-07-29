@@ -418,26 +418,6 @@ public class BeanVentas implements Serializable {
         }
     }
 
-    public void buscar() {
-        totalRelacion = new BigDecimal(0);
-        if (getFechaFiltroInicio() == null || getFechaFiltroFin() == null) {
-            JsfUtil.addErrorMessageClean("Favor de ingresar un rango de fechas");
-        } else {
-            listaVentasHistorial = ifaceVentas.getVentas(fechaFiltroInicio, fechaFiltroFin, new BigDecimal(1), new BigDecimal(status));
-            getTotalRelacionOperaciones();
-
-        }
-
-    }
-
-    public void getTotalRelacionOperaciones() {
-        for (Ventas v : listaVentasHistorial) {
-            for (VentasProductos vp : v.getListaProductos()) {
-                totalRelacion = totalRelacion.add(vp.getTotalProducto(), MathContext.UNLIMITED);
-            }
-
-        }
-    }
 
     public void setHoy(Date hoy) {
         this.hoy = hoy;

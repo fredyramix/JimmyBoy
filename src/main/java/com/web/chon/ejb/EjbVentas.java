@@ -108,16 +108,28 @@ public class EjbVentas implements NegocioVentas{
     }
 
     @Override
-    public List<Object[]> getVentas(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta) {
+    public List<Object[]> getVentas(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta,BigDecimal idMesero) {
          Query query;
          System.out.println("EJB=GETVENTAS");
-        StringBuffer cadena = new StringBuffer("select v.ID_VENTAS_PK, v.NUMERO_MESA, v.ESTATUS_VENTAS,v.CANTIDAD_PERSONAS, \n" +
-"v.FECHA_INICIO, v.FECHA_FIN, v.ID_MESERO_FK,v.TOTAL , v.FOLIO, v.ID_SUCURSAL_FK,u.NOMBRE_USUARIO,u.APATERNO_USUARIO,\n" +
-"u.AMATERNO_USUARIO\n" +
-"from ventas v\n" +
-"inner join usuario u \n" +
-"on u.id_usuario_pk = v.id_mesero_fk\n" +
-"where v.ESTATUS_VENTAS = '"+idStatusVenta+"' and v.ID_SUCURSAL_FK='"+idSucursal+"' and TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '"+ fechaInicio +"' AND '"+ fechaFin +"' order by v.FECHA_INICIO");
+        StringBuffer cadena = new StringBuffer(""
+                + "select v.ID_VENTAS_PK, v.NUMERO_MESA, "
+                + "v.ESTATUS_VENTAS,v.CANTIDAD_PERSONAS, \n" 
+                +"v.FECHA_INICIO, v.FECHA_FIN, v.ID_MESERO_FK,v.TOTAL , v.FOLIO, v.ID_SUCURSAL_FK,"
+                + "u.NOMBRE_USUARIO,u.APATERNO_USUARIO,\n" 
+                +"u.AMATERNO_USUARIO\n" 
+                +"from ventas v\n" 
+                +"inner join usuario u \n" 
+                +"on u.id_usuario_pk = v.id_mesero_fk\n" 
+                +"where v.ESTATUS_VENTAS = '"+idStatusVenta+"' and v.ID_SUCURSAL_FK='"+idSucursal+"' "
+                + "and TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') "
+                + "BETWEEN '"+ fechaInicio +"' AND '"+ fechaFin +"'");
+        if (idMesero != null) 
+        {
+            cadena.append(" AND v.ID_MESERO_FK = '"+idMesero+"'");
+        }
+            cadena.append("order by v.FECHA_INICIO");
+            
+        
         query = em.createNativeQuery(cadena.toString());
 
         try {
