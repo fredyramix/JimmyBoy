@@ -5,9 +5,12 @@
  */
 package com.web.chon.negocio;
 
+import com.web.chon.dominio.CorteVista1;
 import com.web.chon.dominio.Venta;
 import com.web.chon.dominio.Ventas;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;
 
@@ -26,4 +29,8 @@ public interface NegocioVentas {
     public int cancelarVentaProducto(Ventas venta);
     public List<Object[]> getVentas(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta,BigDecimal idMesero);
     public List<Object[]> getVentasByInterval(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta); 
+    public List<Object[]> getVentasCorte1(String fechaInicio, String fechaFin); 
+    public List<Object[]> getVentasCategorias(String fechaInicio, String fechaFin);
+    public List<Object[]> getVentasMeseros(String fechaInicio, String fechaFin);
+
 }

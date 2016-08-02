@@ -5,6 +5,7 @@
  */
 package com.web.chon.service;
 
+import com.web.chon.dominio.CorteVista1;
 import com.web.chon.dominio.Ventas;
 import com.web.chon.dominio.VentasProductos;
 import com.web.chon.negocio.NegocioVentas;
@@ -172,6 +173,57 @@ public class ServiceVentas implements IfaceVentas {
     public int cancelarVentaProducto(Ventas venta) {
         getEjb();
         return ejb.cancelarVentaProducto(venta);
+    
+    }
+
+    @Override
+    public ArrayList<CorteVista1> getVentasCorte1(Date fechaInicio, Date fechaFin) {
+        getEjb();
+        ArrayList<CorteVista1> lstVenta = new ArrayList<CorteVista1>();
+        List<Object[]> lstObject = ejb.getVentasCorte1(TiempoUtil.getFechaDDMMYYYY(fechaInicio), TiempoUtil.getFechaDDMMYYYY(fechaFin));
+        for (Object[] object : lstObject) {
+            CorteVista1 venta = new CorteVista1();
+            venta.setIdProducto(object[0] == null ? null : object[0].toString());
+            venta.setNombreProducto(object[1] == null ? null : object[1].toString());
+            venta.setCantidad(object[2] == null ? null : new BigDecimal(object[2].toString()));
+            venta.setTotal(object[3] == null ? null : new BigDecimal(object[3].toString()));
+            lstVenta.add(venta);
+        }
+        return lstVenta;
+        
+        
+    }
+
+    @Override
+    public ArrayList<CorteVista1> getVentasCategorias(Date fechaInicio, Date fechaFin) {
+        getEjb();
+        ArrayList<CorteVista1> lstVenta = new ArrayList<CorteVista1>();
+        List<Object[]> lstObject = ejb.getVentasCategorias(TiempoUtil.getFechaDDMMYYYY(fechaInicio), TiempoUtil.getFechaDDMMYYYY(fechaFin));
+        for (Object[] object : lstObject) {
+            CorteVista1 venta = new CorteVista1();
+            venta.setIdProducto(object[0] == null ? null : object[0].toString());
+            venta.setNombreProducto(object[1] == null ? null : object[1].toString());
+            venta.setCantidad(object[2] == null ? null : new BigDecimal(object[2].toString()));
+            venta.setTotal(object[3] == null ? null : new BigDecimal(object[3].toString()));
+            lstVenta.add(venta);
+        }
+        return lstVenta;
+    }
+
+    @Override
+    public ArrayList<CorteVista1> getVentasMeseros(Date fechaInicio, Date fechaFin) {
+       getEjb();
+        ArrayList<CorteVista1> lstVenta = new ArrayList<CorteVista1>();
+        List<Object[]> lstObject = ejb.getVentasMeseros(TiempoUtil.getFechaDDMMYYYY(fechaInicio), TiempoUtil.getFechaDDMMYYYY(fechaFin));
+        for (Object[] object : lstObject) {
+            CorteVista1 venta = new CorteVista1();
+            venta.setIdProducto(object[0] == null ? null : object[0].toString());
+            venta.setNombreProducto(object[1] == null ? null : object[1].toString());
+            venta.setCantidad(object[2] == null ? null : new BigDecimal(object[2].toString()));
+            venta.setTotal(object[3] == null ? null : new BigDecimal(object[3].toString()));
+            lstVenta.add(venta);
+        }
+        return lstVenta;
     
     }
     

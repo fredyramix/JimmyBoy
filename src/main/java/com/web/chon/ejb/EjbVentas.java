@@ -9,6 +9,8 @@ import com.web.chon.dominio.Ventas;
 import com.web.chon.negocio.NegocioVentas;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -162,6 +164,79 @@ public class EjbVentas implements NegocioVentas{
         
         return query.executeUpdate();
         
+    }
+
+    @Override
+    public List<Object[]> getVentasCorte1(String fechaInicio, String fechaFin) {
+      
+        try {
+
+            Query query = em.createNativeQuery("SELECT vp.ID_PRODUCTO_FK,p.NOMBRE_PRODUCTO,sum(vp.CANTIDAD) as cantidad,sum(vp.TOTAL)as total FROM VENTAS_PRODUCTOS vp\n" +
+"inner join VENTAS v on v.ID_VENTAS_PK = vp.ID_VENTAS_FK\n" +
+"inner join PRODUCTOS p on p.ID_PRODUCTO_PK = vp.ID_PRODUCTO_FK\n" +
+"WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '"+fechaInicio+"' and '"+fechaFin+"'\n" +
+" and v.ESTATUS_VENTAS = 2  and vp.ESTATUS=1 GROUP BY  p.NOMBRE_PRODUCTO,vp.ID_PRODUCTO_FK ORDER BY total desc");
+            List<Object[]> resultList = null;
+            //System.out.println("Query: "+query);
+            resultList = query.getResultList();
+
+            return resultList;
+
+        } catch (Exception ex) {
+            Logger.getLogger(EjbProducto.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+
+    }
+
+    @Override
+    public List<Object[]> getVentasCategorias(String fechaInicio, String fechaFin) {
+       
+        try {
+
+            Query query = em.createNativeQuery("SELECT cat.ID_CATEGORIA_PK,cat.NOMBRE_CATEGORIA,sum(vp.CANTIDAD) as cantidad,sum(vp.TOTAL)as total FROM VENTAS_PRODUCTOS vp\n" +
+"inner join VENTAS v on v.ID_VENTAS_PK = vp.ID_VENTAS_FK\n" +
+"inner join PRODUCTOS p on p.ID_PRODUCTO_PK = vp.ID_PRODUCTO_FK\n" +
+"inner join CATEGORIAS cat\n" +
+"on cat.ID_CATEGORIA_PK = p.ID_CATEGORIA_FK\n" +
+"WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '"+fechaInicio+"' and '"+fechaFin+"'\n" +
+" and v.ESTATUS_VENTAS = 2 and vp.ESTATUS=1 GROUP BY  cat.ID_CATEGORIA_PK,cat.NOMBRE_CATEGORIA ORDER BY total desc");
+            List<Object[]> resultList = null;
+            //System.out.println("Query: "+query);
+            resultList = query.getResultList();
+
+            return resultList;
+
+        } catch (Exception ex) {
+            Logger.getLogger(EjbProducto.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+        
+    }
+
+    @Override
+    public List<Object[]> getVentasMeseros(String fechaInicio, String fechaFin) {
+         try {
+
+            Query query = em.createNativeQuery("SELECT v.ID_MESERO_FK, u.NOMBRE_USUARIO, COUNT(v.FOLIO) as numero_VENTAS,sum(v.TOTAL)as total  FROM VENTAS v\n" +
+"inner join usuario u\n" +
+"on u.ID_USUARIO_PK=v.ID_MESERO_FK \n" +
+"WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '"+fechaInicio+"' and '"+fechaFin+"'\n" +
+" and v.ESTATUS_VENTAS = 2 GROUP BY v.ID_MESERO_FK,u.NOMBRE_USUARIO \n" +
+"order by total desc");
+            List<Object[]> resultList = null;
+            //System.out.println("Query: "+query);
+            resultList = query.getResultList();
+
+            return resultList;
+
+        } catch (Exception ex) {
+            Logger.getLogger(EjbProducto.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    
     }
     
 }

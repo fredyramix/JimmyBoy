@@ -5,6 +5,7 @@
  */
 package com.web.chon.service;
 
+import com.web.chon.dominio.CorteVista1;
 import com.web.chon.dominio.Ventas;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,4 +36,12 @@ public interface IfaceVentas {
 
     public ArrayList<Ventas> getVentasByInterval(Date fechaInicio, Date fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta);
 
+    public ArrayList<CorteVista1> getVentasCorte1(Date fechaInicio, Date fechaFin);
+    
+    public ArrayList<CorteVista1> getVentasCategorias(Date fechaInicio, Date fechaFin);
+    
+    public ArrayList<CorteVista1> getVentasMeseros(Date fechaInicio, Date fechaFin);
+
+    
+    
 }

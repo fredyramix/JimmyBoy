@@ -51,6 +51,8 @@ public class BeanRelacionOperaciones implements Serializable {
         hoy = new Date();
         listaMeseros = ifaceCatUsuario.getMeseros();
         listaVentasHistorial = new ArrayList<Ventas>();
+        fechaFiltroInicio = new Date();
+        fechaFiltroFin = new Date();
 
     }
 
