@@ -6,15 +6,38 @@
 package com.web.chon.bean;
 
 import com.web.chon.dominio.CorteVista1;
+import com.web.chon.dominio.Ventas;
+import com.web.chon.dominio.VentasProductos;
 import com.web.chon.service.IfaceVentas;
+import com.web.chon.util.Constantes;
+import com.web.chon.util.JasperReportUtil;
 import com.web.chon.util.JsfUtil;
+import com.web.chon.util.NumeroALetra;
 import com.web.chon.util.TiempoUtil;
+import com.web.chon.util.UtilUpload;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import org.primefaces.context.RequestContext;
+import org.primefaces.model.StreamedContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -51,6 +74,15 @@ public class beanCorteCaja implements Serializable {
     private ArrayList<CorteVista1> vistaCategorias;
     private ArrayList<CorteVista1> vistaMeseros;
 
+    //VARIABLES DE REPORTE
+    private StreamedContent media;
+    private Map paramReport = new HashMap();
+    private ByteArrayOutputStream outputStream;
+    private String number;
+    private String rutaPDF;
+    private String nombreEmpaque = "";
+    private String pathFileJasper = "C:/Users/Juan/Documents/NetBeansProjects/Chonajos-V2/ticket.jasper";
+
     @PostConstruct
     public void init() {
         status = 2;
@@ -61,9 +93,16 @@ public class beanCorteCaja implements Serializable {
         vistaCategorias = new ArrayList<CorteVista1>();
         vistaMeseros = new ArrayList<CorteVista1>();
     }
-    public void imprimir()
-    {
-        
+
+    public void imprimir() {
+        if (vista1.isEmpty() || vistaCategorias.isEmpty() || vistaMeseros.isEmpty()) {
+            JsfUtil.addErrorMessageClean("Genera una consulta primero");
+        } else {
+            setParameterTicket(vistaCategorias,vista1, vistaMeseros);
+            generateReport(1);
+            RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
+        }
+
     }
 
     public void buscar() {
@@ -134,6 +173,131 @@ public class beanCorteCaja implements Serializable {
             }
             enableCalendar = true;
         }
+    }
+
+    private void setParameterTicket(ArrayList<CorteVista1> listaCategorias, ArrayList<CorteVista1> listaProductos, ArrayList<CorteVista1> listaMeseros) {
+
+        NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
+        ArrayList<String> categorias = new ArrayList<String>();
+        ArrayList<String> productos = new ArrayList<String>();
+        ArrayList<String> meseros = new ArrayList<String>();
+
+        //------For para recorrer las Categorias----//
+        BigDecimal totalcantCategorias = new BigDecimal(0);
+        BigDecimal totalDineCategorias = new BigDecimal(0);
+        BigDecimal totalcantProductos = new BigDecimal(0);
+        BigDecimal totalDineProductos = new BigDecimal(0);
+        BigDecimal totalcantMeseros = new BigDecimal(0);
+        BigDecimal totalDineMeseros = new BigDecimal(0);
+        for (CorteVista1 linea : listaCategorias) {
+            int maximo = 30;
+            String cad = "";
+            StringBuilder nombreProducto = new StringBuilder(linea.getNombreProducto());
+            if (nombreProducto.length() > maximo) {
+                cad = nombreProducto.substring(0, maximo);
+            } else if (nombreProducto.length() < maximo) {
+                int dif = maximo - nombreProducto.length();
+
+                for (int i = 0; i <= dif + 6; i++) {
+                    nombreProducto.append(" ");
+                }
+                //System.out.println("len: " + nombreProducto.length());
+                cad = nombreProducto.toString();
+            }
+            totalcantCategorias = totalcantCategorias.add(linea.getCantidad(), MathContext.UNLIMITED);
+            totalDineCategorias = totalDineCategorias.add(linea.getTotal(), MathContext.UNLIMITED);
+            String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
+            categorias.add(cadena);
+
+        }
+        //------For para recorrer los Productos----//
+        for (CorteVista1 linea : listaProductos) {
+            int maximo = 30;
+            String cad = "";
+            StringBuilder nombreProducto = new StringBuilder(linea.getNombreProducto());
+            if (nombreProducto.length() > maximo) {
+                cad = nombreProducto.substring(0, maximo);
+            } else if (nombreProducto.length() < maximo) {
+                int dif = maximo - nombreProducto.length();
+
+                for (int i = 0; i <= dif + 6; i++) {
+                    nombreProducto.append(" ");
+                }
+                //System.out.println("len: " + nombreProducto.length());
+                cad = nombreProducto.toString();
+            }
+            totalcantProductos = totalcantProductos.add(linea.getCantidad(), MathContext.UNLIMITED);
+            totalDineProductos = totalDineProductos.add(linea.getTotal(), MathContext.UNLIMITED);
+                        String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
+            productos.add(cadena);
+
+        }
+        for (CorteVista1 linea : listaMeseros) {
+            int maximo = 30;
+            String cad = "";
+            StringBuilder nombreProducto = new StringBuilder(linea.getNombreProducto());
+            if (nombreProducto.length() > maximo) {
+                cad = nombreProducto.substring(0, maximo);
+            } else if (nombreProducto.length() < maximo) {
+                int dif = maximo - nombreProducto.length();
+
+                for (int i = 0; i <= dif + 6; i++) {
+                    nombreProducto.append(" ");
+                }
+                //System.out.println("len: " + nombreProducto.length());
+                cad = nombreProducto.toString();
+            }
+            totalcantMeseros = totalcantMeseros.add(linea.getCantidad(), MathContext.UNLIMITED);
+            totalDineMeseros = totalDineMeseros.add(linea.getTotal(), MathContext.UNLIMITED);
+                        String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
+            meseros.add(cadena);
+
+        }
+
+        paramReport.put("categorias", categorias);
+        paramReport.put("fechaIni", TiempoUtil.getFechaDDMMYYYYHHMM(fechaFiltroInicio));
+        paramReport.put("fechaFin", TiempoUtil.getFechaDDMMYYYYHHMM(fechaFiltroFin));
+        paramReport.put("totalCant", totalcantCategorias.toString());
+        paramReport.put("totalDine", nf.format(totalDineCategorias).toString());
+        paramReport.put("productos", productos);
+        paramReport.put("totalCantPro", totalcantProductos.toString());
+        paramReport.put("totalDinePro", nf.format(totalDineProductos).toString());
+        paramReport.put("meseros", meseros);
+        paramReport.put("totalCantMese", totalcantMeseros.toString());
+        paramReport.put("totalDineMese", nf.format(totalDineMeseros).toString());
+
+    }
+
+    public void generateReport(int idVenta) {
+        JRExporter exporter = null;
+
+        try {
+            ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+            String temporal = "";
+            if (servletContext.getRealPath("") == null) {
+                temporal = Constantes.PATHSERVER;
+            } else {
+                temporal = servletContext.getRealPath("");
+            }
+
+            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "Corte" + File.separatorChar + "Coffee.jasper";
+
+            JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport, new JREmptyDataSource());
+            outputStream = JasperReportUtil.getOutputStreamFromReport(paramReport, getPathFileJasper());
+            exporter = new JRPdfExporter();
+
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jp);
+            exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
+//            exporter.setParameter(JRPdfExporterParameter.PDF_JAVASCRIPT, "this.print();");
+            byte[] bytes = outputStream.toByteArray();
+
+            rutaPDF = UtilUpload.saveFileTemp(bytes, "ticketPdf", idVenta, 1);
+
+        } catch (Exception exception) {
+            System.out.println("Error >" + exception.getMessage());
+
+        }
+
     }
 
     public ArrayList<CorteVista1> getVistaCategorias() {
@@ -262,6 +426,62 @@ public class beanCorteCaja implements Serializable {
 
     public void setVistaMeseros(ArrayList<CorteVista1> vistaMeseros) {
         this.vistaMeseros = vistaMeseros;
+    }
+
+    public StreamedContent getMedia() {
+        return media;
+    }
+
+    public void setMedia(StreamedContent media) {
+        this.media = media;
+    }
+
+    public Map getParamReport() {
+        return paramReport;
+    }
+
+    public void setParamReport(Map paramReport) {
+        this.paramReport = paramReport;
+    }
+
+    public ByteArrayOutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public void setOutputStream(ByteArrayOutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getRutaPDF() {
+        return rutaPDF;
+    }
+
+    public void setRutaPDF(String rutaPDF) {
+        this.rutaPDF = rutaPDF;
+    }
+
+    public String getNombreEmpaque() {
+        return nombreEmpaque;
+    }
+
+    public void setNombreEmpaque(String nombreEmpaque) {
+        this.nombreEmpaque = nombreEmpaque;
+    }
+
+    public String getPathFileJasper() {
+        return pathFileJasper;
+    }
+
+    public void setPathFileJasper(String pathFileJasper) {
+        this.pathFileJasper = pathFileJasper;
     }
 
 }
