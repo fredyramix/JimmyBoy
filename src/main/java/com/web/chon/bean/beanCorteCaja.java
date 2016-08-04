@@ -17,9 +17,12 @@ import com.web.chon.util.TiempoUtil;
 import com.web.chon.util.UtilUpload;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -27,9 +30,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -254,17 +264,17 @@ public class beanCorteCaja implements Serializable {
 
         }
 
-        paramReport.put("categorias", categorias);
-        paramReport.put("fechaIni", TiempoUtil.getFechaDDMMYYYYHHMM(fechaFiltroInicio));
-        paramReport.put("fechaFin", TiempoUtil.getFechaDDMMYYYYHHMM(fechaFiltroFin));
-        paramReport.put("totalCant", totalcantCategorias.toString());
-        paramReport.put("totalDine", nf.format(totalDineCategorias).toString());
-        paramReport.put("productos", productos);
-        paramReport.put("totalCantPro", totalcantProductos.toString());
-        paramReport.put("totalDinePro", nf.format(totalDineProductos).toString());
-        paramReport.put("meseros", meseros);
-        paramReport.put("totalCantMese", totalcantMeseros.toString());
-        paramReport.put("totalDineMese", nf.format(totalDineMeseros).toString());
+//        paramReport.put("categorias", categorias);
+        paramReport.put("fechaIni", TiempoUtil.getFechaDDMMYYYY(fechaFiltroInicio));
+        paramReport.put("fechaFin", TiempoUtil.getFechaDDMMYYYY(fechaFiltroFin));
+//        paramReport.put("totalCant", totalcantCategorias.toString());
+//        paramReport.put("totalDine", nf.format(totalDineCategorias).toString());
+//        paramReport.put("productos", productos);
+//        paramReport.put("totalCantPro", totalcantProductos.toString());
+//        paramReport.put("totalDinePro", nf.format(totalDineProductos).toString());
+//        paramReport.put("meseros", meseros);
+//        paramReport.put("totalCantMese", totalcantMeseros.toString());
+//        paramReport.put("totalDineMese", nf.format(totalDineMeseros).toString());
 
     }
 
@@ -279,10 +289,30 @@ public class beanCorteCaja implements Serializable {
             } else {
                 temporal = servletContext.getRealPath("");
             }
+ Context initContext;
+            Connection con = null;
+            try {
+                
+                javax.sql.DataSource datasource = null;
 
-            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "Corte" + File.separatorChar + "Coffee.jasper";
+                Context initialContext = new InitialContext();
 
-            JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport, new JREmptyDataSource());
+                // "jdbc/MyDBname" >> is a JNDI Name of DataSource on weblogic
+                datasource = (DataSource) initialContext.lookup("DataChon");
+                
+                try {
+                    con = datasource.getConnection();
+                    System.out.println("datsource" + con.toString());
+                } catch (SQLException ex) {
+                    Logger.getLogger(beanCorteCaja.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (NamingException ex) {
+                Logger.getLogger(beanCorteCaja.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "Corte" + File.separatorChar + "Coffee_2.jasper";
+
+            JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport, con);
             outputStream = JasperReportUtil.getOutputStreamFromReport(paramReport, getPathFileJasper());
             exporter = new JRPdfExporter();
 
@@ -298,6 +328,25 @@ public class beanCorteCaja implements Serializable {
 
         }
 
+    }
+    public void downloadFile() {
+        try {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+
+            HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
+            response.reset();
+
+            response.setContentType("application/pdf");
+            response.setHeader("Content-disposition", "attachment; filename=" + rutaPDF);
+
+            OutputStream output = response.getOutputStream();
+            output.write(outputStream.toByteArray());
+            output.close();
+
+            facesContext.responseComplete();
+        } catch (Exception e) {
+            System.out.println("Error >" + e.getMessage());
+        }
     }
 
     public ArrayList<CorteVista1> getVistaCategorias() {

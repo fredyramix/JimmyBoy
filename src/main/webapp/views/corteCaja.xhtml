@@ -19,7 +19,8 @@
                     <div class="form-group" align="right">
                         <p:commandButton value="Buscar" update=":formContent" ajax="true" action="#{beanCorteCaja.buscar()}"/>
                         <p:commandButton value="Imprimir" update=":formContent" ajax="true" action="#{beanCorteCaja.imprimir()}"/>
-
+<!--<p:commandButton  value="imprimir ticket" id="btonImprimir" ajax="false" rendered="{beanCorteCaja.viewEstate =='init'}"  onclick="window.frames.miFrame.print();" resetValues="true" />-->
+                            
                     </div>
                     <div class="col-lg-12 col-md-4 col-sm-12 col-xs-12 ">
                         <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
