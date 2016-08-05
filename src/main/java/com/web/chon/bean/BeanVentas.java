@@ -409,7 +409,8 @@ public class BeanVentas implements Serializable {
             byte[] bytes = outputStream.toByteArray();
 
             rutaPDF = UtilUpload.saveFileTemp(bytes, "ticketPdf", idVenta, 1);
-
+            con.close();
+           
         } catch (Exception exception) {
             System.out.println("Error >" + exception.getMessage());
 

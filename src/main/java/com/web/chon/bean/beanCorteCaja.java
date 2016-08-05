@@ -104,17 +104,27 @@ public class beanCorteCaja implements Serializable {
         vistaMeseros = new ArrayList<CorteVista1>();
     }
 
+    public void descargar() {
+        if (vista1.isEmpty() || vistaCategorias.isEmpty() || vistaMeseros.isEmpty()) {
+            JsfUtil.addErrorMessageClean("Genera una consulta primero");
+        } else {
+            setParameterTicket(vistaCategorias, vista1, vistaMeseros);
+            generateReport(1, "Coffee_2");
+            downloadFile();
+
+        }
+
+    }
+
     public void imprimir() {
         if (vista1.isEmpty() || vistaCategorias.isEmpty() || vistaMeseros.isEmpty()) {
             JsfUtil.addErrorMessageClean("Genera una consulta primero");
         } else {
-            setParameterTicket(vistaCategorias,vista1, vistaMeseros);
-            generateReport(1);
-            downloadFile();
-            
-            
-        }
+            setParameterTicket(vistaCategorias, vista1, vistaMeseros);
+            generateReport(1, "Coffee_3");
+            RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
 
+        }
     }
 
     public void buscar() {
@@ -157,42 +167,37 @@ public class beanCorteCaja implements Serializable {
     }
 
     public void verificarCombo() {
-        if (filtro == -1) {
-            //se habilitan los calendarios.
-            setFechaFiltroInicio(null);
-            setFechaFiltroFin(null);
-            enableCalendar = false;
-        } else {
-            switch (filtro) {
-                case 1:
-                    setFechaFiltroInicio(new Date());
-                    setFechaFiltroFin(new Date());
-                    break;
 
-                case 2:
-                    setFechaFiltroInicio(TiempoUtil.getDayOneOfMonth(new Date()));
-                    setFechaFiltroFin(TiempoUtil.getDayEndOfMonth(new Date()));
+        switch (filtro) {
+            case 1:
+                //se habilitan los calendarios.
+                setFechaFiltroInicio(null);
+                setFechaFiltroFin(null);
+                enableCalendar = false;
+                break;
+            case 2:
+                setFechaFiltroInicio(new Date());
+                setFechaFiltroFin(new Date());
+                enableCalendar = true;
+                break;
+            case 3:
+                setFechaFiltroInicio(TiempoUtil.getDayOneOfMonth(new Date()));
+                setFechaFiltroFin(TiempoUtil.getDayEndOfMonth(new Date()));
+                enableCalendar = true;
+                break;
 
-                    break;
-                case 3:
-                    setFechaFiltroInicio(TiempoUtil.getDayOneYear(new Date()));
-                    setFechaFiltroFin(TiempoUtil.getDayEndYear(new Date()));
-                    break;
-                default:
-                    setFechaFiltroInicio(null);
-                    setFechaFiltroFin(null);
-                    break;
-            }
-            enableCalendar = true;
+            default:
+                setFechaFiltroInicio(null);
+                setFechaFiltroFin(null);
+                enableCalendar = true;
+                break;
         }
+
     }
 
     private void setParameterTicket(ArrayList<CorteVista1> listaCategorias, ArrayList<CorteVista1> listaProductos, ArrayList<CorteVista1> listaMeseros) {
 
         NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
-        ArrayList<String> categorias = new ArrayList<String>();
-        ArrayList<String> productos = new ArrayList<String>();
-        ArrayList<String> meseros = new ArrayList<String>();
 
         //------For para recorrer las Categorias----//
         BigDecimal totalcantCategorias = new BigDecimal(0);
@@ -219,7 +224,6 @@ public class beanCorteCaja implements Serializable {
             totalcantCategorias = totalcantCategorias.add(linea.getCantidad(), MathContext.UNLIMITED);
             totalDineCategorias = totalDineCategorias.add(linea.getTotal(), MathContext.UNLIMITED);
             String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
-            categorias.add(cadena);
 
         }
         //------For para recorrer los Productos----//
@@ -240,8 +244,7 @@ public class beanCorteCaja implements Serializable {
             }
             totalcantProductos = totalcantProductos.add(linea.getCantidad(), MathContext.UNLIMITED);
             totalDineProductos = totalDineProductos.add(linea.getTotal(), MathContext.UNLIMITED);
-                        String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
-            productos.add(cadena);
+            String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
 
         }
         for (CorteVista1 linea : listaMeseros) {
@@ -261,26 +264,16 @@ public class beanCorteCaja implements Serializable {
             }
             totalcantMeseros = totalcantMeseros.add(linea.getCantidad(), MathContext.UNLIMITED);
             totalDineMeseros = totalDineMeseros.add(linea.getTotal(), MathContext.UNLIMITED);
-                        String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
-            meseros.add(cadena);
+            String cadena = linea.getIdProducto().toString() + "              " + cad + "             " + linea.getCantidad().toString() + "            " + nf.format(linea.getTotal()).toString();
 
         }
 
-//        paramReport.put("categorias", categorias);
         paramReport.put("fechaIni", TiempoUtil.getFechaDDMMYYYY(fechaFiltroInicio));
         paramReport.put("fechaFin", TiempoUtil.getFechaDDMMYYYY(fechaFiltroFin));
-//        paramReport.put("totalCant", totalcantCategorias.toString());
-//        paramReport.put("totalDine", nf.format(totalDineCategorias).toString());
-//        paramReport.put("productos", productos);
-//        paramReport.put("totalCantPro", totalcantProductos.toString());
-//        paramReport.put("totalDinePro", nf.format(totalDineProductos).toString());
-//        paramReport.put("meseros", meseros);
-//        paramReport.put("totalCantMese", totalcantMeseros.toString());
-//        paramReport.put("totalDineMese", nf.format(totalDineMeseros).toString());
 
     }
 
-    public void generateReport(int idVenta) {
+    public void generateReport(int idVenta, String nombreArchivo) {
         JRExporter exporter = null;
 
         try {
@@ -291,17 +284,17 @@ public class beanCorteCaja implements Serializable {
             } else {
                 temporal = servletContext.getRealPath("");
             }
- Context initContext;
+            Context initContext;
             Connection con = null;
             try {
-                
+
                 javax.sql.DataSource datasource = null;
 
                 Context initialContext = new InitialContext();
 
                 // "jdbc/MyDBname" >> is a JNDI Name of DataSource on weblogic
                 datasource = (DataSource) initialContext.lookup("DataChon");
-                
+
                 try {
                     con = datasource.getConnection();
                     System.out.println("datsource" + con.toString());
@@ -311,8 +304,8 @@ public class beanCorteCaja implements Serializable {
             } catch (NamingException ex) {
                 Logger.getLogger(beanCorteCaja.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "Corte" + File.separatorChar + "Coffee_2.jasper";
+
+            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "Corte" + File.separatorChar + nombreArchivo + ".jasper";
 
             JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport, con);
             outputStream = JasperReportUtil.getOutputStreamFromReport(paramReport, getPathFileJasper());
@@ -324,13 +317,14 @@ public class beanCorteCaja implements Serializable {
             byte[] bytes = outputStream.toByteArray();
 
             rutaPDF = UtilUpload.saveFileTemp(bytes, "ticketPdf", idVenta, 1);
-
+            con.close();
         } catch (Exception exception) {
             System.out.println("Error >" + exception.getMessage());
 
         }
 
     }
+
     public void downloadFile() {
         try {
             FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -340,7 +334,7 @@ public class beanCorteCaja implements Serializable {
             Date hoy = new Date();
 
             response.setContentType("application/pdf");
-            response.setHeader("Content-disposition", "attachment; filename=" + "ReporteVentas"+TiempoUtil.getFechaDDMMYYYY(hoy)+".pdf");
+            response.setHeader("Content-disposition", "attachment; filename=" + "ReporteVentas" + TiempoUtil.getFechaDDMMYYYY(hoy) + ".pdf");
 
             OutputStream output = response.getOutputStream();
             output.write(outputStream.toByteArray());

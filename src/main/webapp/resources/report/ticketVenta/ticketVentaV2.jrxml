@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2016-08-04T18:55:10 -->
+<!-- 2016-08-04T20:54:56 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ticket" pageWidth="219" pageHeight="1224" columnWidth="179" leftMargin="20" rightMargin="20" topMargin="4" bottomMargin="20" isIgnorePagination="true" uuid="cce07992-6ec7-4616-8caf-ceb4ee12975b">
 	<property name="ireport.zoom" value="2.5937424601000028"/>
 	<property name="ireport.x" value="0"/>
@@ -69,6 +69,7 @@ where vp.ID_VENTAS_FK=$P{ID_VENTA_FK}]]>
 	</queryString>
 	<field name="SYSDATE" class="java.sql.Timestamp"/>
 	<variable name="fechaVenta" class="java.lang.String"/>
+	<variable name="variable" class="java.math.BigDecimal"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -255,6 +256,7 @@ Del. Miguel Hidalgo, C.P 11550 Ciudad de México, D.F.]]></text>
 							<datasetParameterExpression><![CDATA[$P{ID_VENTA_PK}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<returnValue fromVariable="sumatotal" toVariable="variable"/>
 					</datasetRun>
 					<jr:column width="80" uuid="6113b1c1-206b-414b-8141-25f2aadaf3b4">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
@@ -336,15 +338,7 @@ Del. Miguel Hidalgo, C.P 11550 Ciudad de México, D.F.]]></text>
 								<text><![CDATA[P/U]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="Table_CH" height="30">
-							<staticText>
-								<reportElement x="0" y="0" width="40" height="30" uuid="7f69d291-f216-4203-aa23-294e487f473d"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="7"/>
-								</textElement>
-								<text><![CDATA[TOTAL]]></text>
-							</staticText>
-						</jr:columnFooter>
+						<jr:columnFooter style="Table_CH" height="30"/>
 						<jr:detailCell style="Table_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="40" height="30" uuid="a9e790c3-a03f-4cea-8040-39791c4dfb3e"/>
@@ -354,8 +348,7 @@ Del. Miguel Hidalgo, C.P 11550 Ciudad de México, D.F.]]></text>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="7"/>
 								</textElement>
-								<textFieldExpression><![CDATA["$"+new java.text.DecimalFormat("#,##0.00").format( $F{PRECIO_VENTA})
-]]></textFieldExpression>
+								<textFieldExpression><![CDATA["$"+new java.text.DecimalFormat("#,##0.00").format( $F{PRECIO_VENTA})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -376,15 +369,7 @@ Del. Miguel Hidalgo, C.P 11550 Ciudad de México, D.F.]]></text>
 								<text><![CDATA[IMPORTE]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="Table_CH" height="30">
-							<textField>
-								<reportElement x="0" y="0" width="40" height="30" uuid="34c85895-0bd6-4eb1-8ebd-080670fb6766"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="9" isBold="true"/>
-								</textElement>
-								<textFieldExpression><![CDATA["$"+new java.text.DecimalFormat("#,##0.00").format( $V{sumatotal})]]></textFieldExpression>
-							</textField>
-						</jr:columnFooter>
+						<jr:columnFooter style="Table_CH" height="30"/>
 						<jr:detailCell style="Table_TD" height="30">
 							<textField>
 								<reportElement x="0" y="0" width="40" height="30" uuid="68fc7117-8d6b-40af-8aa3-c281d2891177"/>
@@ -402,8 +387,24 @@ Del. Miguel Hidalgo, C.P 11550 Ciudad de México, D.F.]]></text>
 			</componentElement>
 		</band>
 		<band height="50">
+			<textField>
+				<reportElement x="110" y="0" width="70" height="30" uuid="72ebccfa-9171-4a77-b647-fc25e93b3051"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["$"+new java.text.DecimalFormat("#,##0.00").format( $V{variable})]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="-2" y="33" width="179" height="17" uuid="5b7758dd-5207-4e21-93ed-0f6a6ada63b7">
+				<reportElement x="70" y="0" width="40" height="30" uuid="6a3316c6-d5f0-447b-a66e-a529ea4e55f5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+		</band>
+		<band height="74">
+			<staticText>
+				<reportElement x="-5" y="50" width="179" height="17" uuid="5b7758dd-5207-4e21-93ed-0f6a6ada63b7">
 					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 				</reportElement>
 				<textElement textAlignment="Center">

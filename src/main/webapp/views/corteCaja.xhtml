@@ -18,7 +18,8 @@
                 <div class="container-fluid">
                     <div class="form-group" align="right">
                         <p:commandButton value="Buscar" update=":formContent" ajax="true" action="#{beanCorteCaja.buscar()}"/>
-                        <p:commandButton value="Imprimir" update=":formContent" ajax="false" action="#{beanCorteCaja.imprimir()}"/>
+                        <p:commandButton value="Descargar" update=":formContent" ajax="false" action="#{beanCorteCaja.descargar()}"/>
+                        <p:commandButton value="Imprimir" update=":formContent" ajax="true" action="#{beanCorteCaja.imprimir()}"/>
 <!--<p:commandButton  value="imprimir ticket" id="btonImprimir" ajax="false" rendered="{beanCorteCaja.viewEstate =='init'}"  onclick="window.frames.miFrame.print();" resetValues="true" />-->
                             
                     </div>
@@ -26,10 +27,9 @@
                         <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
                             <p:outputLabel class="col-lg-12 col-md-5 col-sm-4 col-xs-12"  for="selectFiltro" value ="Selecciona una fecha:" rendered="#{beanCorteCaja.viewEstate =='init'}"/> 
                             <h:selectOneMenu  id="selectFiltro" class="col-lg-12 col-md-7 col-sm-8 col-xs-12" value="#{beanCorteCaja.filtro}" rendered="#{beanCorteCaja.viewEstate =='init'}">
-                                <f:selectItem itemLabel="Selecciona una opción" itemValue="-1" />
                                 <f:selectItem itemLabel="Elegir Rango de Fechas" itemValue="1"/>
-                                <f:selectItem itemLabel="Día" itemValue="1"/>
-                                <f:selectItem itemLabel="Mes" itemValue="2"/>
+                                <f:selectItem itemLabel="Día" itemValue="2"/>
+                                <f:selectItem itemLabel="Mes" itemValue="3"/>
                                 <p:ajax event="change" update=":formContent:calendarInicio formContent:calendarFin" listener="#{beanCorteCaja.verificarCombo()}"/>
                             </h:selectOneMenu>
                         </div>
@@ -190,7 +190,8 @@
                         </p:dataTable>
                     </div>
                 </div>
-                  
+                   <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanCorteCaja.rutaPDF}"/>
+            
             </p:panel>
 
         </h:form>
