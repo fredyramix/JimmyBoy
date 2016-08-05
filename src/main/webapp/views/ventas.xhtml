@@ -44,9 +44,9 @@
                                             <f:selectItem itemLabel="Selecciona un Mesero" itemValue=""  />
                                             <f:selectItems value="#{beanVentas.listaMeseros}" var="meserito" itemLabel="#{meserito.nombreUsuario}" itemValue="#{meserito.idUsuarioPk}"/>
                                         </h:selectOneMenu>
-                                        <f:facet name="footer">
+                                        
                                             <p:commandButton value="Iniciar Venta" update=":formContent" action="#{beanVentas.addVenta()}"/>
-                                        </f:facet>  
+                                         
                                     </h:panelGrid>
                                 </p:dialog>
                             </div>
@@ -87,10 +87,9 @@
                                         </p:inputText>
                                         <h:outputLabel  value="Observaciones:" />
                                         <p:inputTextarea id="textarea" rows="3" cols="20" value="#{beanVentas.dataProductoNuevo.observaciones}" />
-                                       
-                                        <f:facet name="footer">
-                                            <p:commandButton value="Agregar a Pedido" update=":formContent:autocompleteProducto formContent:cantidadProducto formContent:textarea :formContent:table" action="#{beanVentas.addVentaProducto()}" />
-                                        </f:facet>  
+        
+                                           <p:commandButton value="Agregar a Pedido" update=":formContent:autocompleteProducto formContent:cantidadProducto formContent:textarea :formContent:table" action="#{beanVentas.addVentaProducto()}" />
+
                                     </h:panelGrid>
                                 </p:dialog>
                             </div>

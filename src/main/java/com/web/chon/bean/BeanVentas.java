@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -34,9 +36,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import javax.sql.DataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
@@ -313,44 +321,47 @@ public class BeanVentas implements Serializable {
         DecimalFormat df = new DecimalFormat("###.##");
         Date date = new Date();
 
-        ArrayList<String> productos = new ArrayList<String>();
+        //ArrayList<String> productos = new ArrayList<String>();
         NumeroALetra numeroLetra = new NumeroALetra();
-        for (VentasProductos vp : venta.getListaProductos()) {
-            int maximo = 20;
-            String cad = "";
-            StringBuilder nombreProducto = new StringBuilder(vp.getNombreProducto());
-            if (nombreProducto.length() > maximo) {
-                cad = nombreProducto.substring(0, maximo);
-            } else if (nombreProducto.length() < maximo) {
-                int dif = maximo - nombreProducto.length();
-
-                for (int i = 0; i <= dif + 6; i++) {
-                    nombreProducto.append(" ");
-                }
-                System.out.println("len: " + nombreProducto.length());
-                cad = nombreProducto.toString();
-            }
-            String cadena = vp.getCantidad().toString() + "   " +cad  + "   " + nf.format(vp.getPrecioVenta()).toString() + "   " + nf.format(vp.getTotalProducto()).toString();
-            productos.add(cadena);
-
-        }
+//        for (VentasProductos vp : venta.getListaProductos()) {
+//            int maximo = 20;
+//            String cad = "";
+//            StringBuilder nombreProducto = new StringBuilder(vp.getNombreProducto());
+//            if (nombreProducto.length() > maximo) {
+//                cad = nombreProducto.substring(0, maximo);
+//            } else if (nombreProducto.length() < maximo) {
+//                int dif = maximo - nombreProducto.length();
+//
+//                for (int i = 0; i <= dif + 6; i++) {
+//                    nombreProducto.append(" ");
+//                }
+//                System.out.println("len: " + nombreProducto.length());
+//                cad = nombreProducto.toString();
+//            }
+//            String cadena = vp.getCantidad().toString() + "   " +cad  + "   " + nf.format(vp.getPrecioVenta()).toString() + "   " + nf.format(vp.getTotalProducto()).toString();
+//            productos.add(cadena);
+//
+//        }
 
         String totalVentaStr = numeroLetra.Convertir(df.format(venta.getTotal()), true);
-        putValues(TiempoUtil.getFechaDDMMYYYYHHMM(date), productos, totalVentaStr, venta,nf.format(venta.getTotal()));
+        putValues(TiempoUtil.getFechaDDMMYYYYHHMM(date), totalVentaStr, venta,nf.format(venta.getTotal()));
 
     }
-    private void putValues(String dateTime, ArrayList<String> items, String totalVentaStr, Ventas v,String totalisimo) {
-
+    private void putValues(String dateTime, String totalVentaStr, Ventas v,String totalisimo) {
+        Date hoy = new Date();
+        hoy.getHours();
+        hoy.getMinutes();
+        hoy.getSeconds();
         paramReport.put("fechaVenta", dateTime);
         paramReport.put("folio", v.getFolio().toString());
-        paramReport.put("productos", items);
+        paramReport.put("ID_VENTA_PK", v.getIdVentaPk().toString());
         paramReport.put("ventaTotal",totalisimo);
         paramReport.put("totalLetra", totalVentaStr);
         paramReport.put("mesa", v.getNumeroMesa().toString());
         paramReport.put("mesero", v.getNombreMesero());
         paramReport.put("per", v.getCantidadPersonas().toString());
-        paramReport.put("abre", TiempoUtil.getFechaDDMMYYYYHHMM(v.getFechaInicio()));
-        paramReport.put("cie", TiempoUtil.getFechaDDMMYYYYHHMM(v.getFechaFin()));
+        paramReport.put("abre",v.getFechaInicio().getHours()+":"+v.getFechaInicio().getMinutes()+":"+v.getFechaInicio().getSeconds()+"hrs");
+        paramReport.put("cie", hoy.getHours()+":"+hoy.getMinutes()+":"+hoy.getSeconds()+"hrs");
     }
 
 
@@ -365,10 +376,30 @@ public class BeanVentas implements Serializable {
             } else {
                 temporal = servletContext.getRealPath("");
             }
+            Context initContext;
+            Connection con = null;
+            try {
+                
+                javax.sql.DataSource datasource = null;
 
-            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "ticketVenta" + File.separatorChar + "ticket.jasper";
+                Context initialContext = new InitialContext();
 
-            JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport, new JREmptyDataSource());
+                // "jdbc/MyDBname" >> is a JNDI Name of DataSource on weblogic
+                datasource = (DataSource) initialContext.lookup("DataChon");
+                
+                try {
+                    con = datasource.getConnection();
+                    System.out.println("datsource" + con.toString());
+                } catch (SQLException ex) {
+                    Logger.getLogger(beanCorteCaja.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (NamingException ex) {
+                Logger.getLogger(beanCorteCaja.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            pathFileJasper = temporal + File.separatorChar + "resources" + File.separatorChar + "report" + File.separatorChar + "ticketVenta" + File.separatorChar + "ticketVentaV2.jasper";
+
+            JasperPrint jp = JasperFillManager.fillReport(getPathFileJasper(), paramReport,con);
             outputStream = JasperReportUtil.getOutputStreamFromReport(paramReport, getPathFileJasper());
             exporter = new JRPdfExporter();
 

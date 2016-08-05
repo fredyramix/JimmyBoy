@@ -110,7 +110,9 @@ public class beanCorteCaja implements Serializable {
         } else {
             setParameterTicket(vistaCategorias,vista1, vistaMeseros);
             generateReport(1);
-            RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
+            downloadFile();
+            
+            
         }
 
     }
@@ -335,9 +337,10 @@ public class beanCorteCaja implements Serializable {
 
             HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();
             response.reset();
+            Date hoy = new Date();
 
             response.setContentType("application/pdf");
-            response.setHeader("Content-disposition", "attachment; filename=" + rutaPDF);
+            response.setHeader("Content-disposition", "attachment; filename=" + "ReporteVentas"+TiempoUtil.getFechaDDMMYYYY(hoy)+".pdf");
 
             OutputStream output = response.getOutputStream();
             output.write(outputStream.toByteArray());

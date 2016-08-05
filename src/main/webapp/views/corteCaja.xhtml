@@ -18,7 +18,7 @@
                 <div class="container-fluid">
                     <div class="form-group" align="right">
                         <p:commandButton value="Buscar" update=":formContent" ajax="true" action="#{beanCorteCaja.buscar()}"/>
-                        <p:commandButton value="Imprimir" update=":formContent" ajax="true" action="#{beanCorteCaja.imprimir()}"/>
+                        <p:commandButton value="Imprimir" update=":formContent" ajax="false" action="#{beanCorteCaja.imprimir()}"/>
 <!--<p:commandButton  value="imprimir ticket" id="btonImprimir" ajax="false" rendered="{beanCorteCaja.viewEstate =='init'}"  onclick="window.frames.miFrame.print();" resetValues="true" />-->
                             
                     </div>
@@ -190,8 +190,7 @@
                         </p:dataTable>
                     </div>
                 </div>
-                  <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanCorteCaja.rutaPDF}"/>
-           
+                  
             </p:panel>
 
         </h:form>
