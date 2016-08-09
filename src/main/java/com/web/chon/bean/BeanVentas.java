@@ -115,7 +115,17 @@ public class BeanVentas implements Serializable {
     private String number;
     private String rutaPDF;
     private String nombreEmpaque = "";
-    private String pathFileJasper = "C:/Users/Juan/Documents/NetBeansProjects/Chonajos-V2/ticket.jasper";
+    private String pathFileJasper = "";
+    
+    //-----constantes-----//
+    private static final BigDecimal SUCURSAL = new BigDecimal(1);
+    private static final BigDecimal STATUSVENTAACTIVA = new BigDecimal(1);
+    private static final BigDecimal PRODUCTOACTIVO = new BigDecimal(1);
+    private static final BigDecimal CANTIDADDEFAULTPRODUCTO = new BigDecimal(1);
+    private static final BigDecimal CANTIDADDEFAULTPERSONAS = new BigDecimal(1);
+    private static final BigDecimal VENTAFINALIZADA = new BigDecimal(2);
+    private static final BigDecimal VENTACANCELADA = new BigDecimal(3);
+    private static final BigDecimal PRODUCTOREMOVIDO = new BigDecimal(3);
 
     @PostConstruct
     public void init() {
@@ -130,7 +140,7 @@ public class BeanVentas implements Serializable {
         setViewEstate("init");
         hoy = new Date();
         dataProductoNuevo = new VentasProductos();
-        listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+        listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, SUCURSAL, STATUSVENTAACTIVA);
         listaMeseros = ifaceCatUsuario.getMeseros();
         //listaProductos = ifaceProductos.getProductos();
         listaCategorias = ifaceCategorias.getCategorias();
@@ -142,29 +152,28 @@ public class BeanVentas implements Serializable {
         listaProductos=ifaceProductos.getProductosByIdCategoria(dataProductoNuevo.getIdCategoria());
     }
 
-    public void addVentaProducto() {
+    public void addVentaProducto() 
+    {
         if(producto.getIdProductoPk()!=null){
         BigDecimal suma = new BigDecimal(0);
         Ventas temporal = new Ventas();
-        
         dataProductoNuevo.setIdVentasFk(ventaAddProducto.getIdVentaPk());
         dataProductoNuevo.setIdCategoria(dataProductoNuevo.getIdCategoria());
         dataProductoNuevo.setIdVentasProductosPk(new BigDecimal(ifaceVentasProductos.getNextVal()));
         dataProductoNuevo.setIdProductoFk(producto.getIdProductoPk());
         dataProductoNuevo.setNombreProducto(producto.getIdProductoPk());
-        dataProductoNuevo.setEstatus(new BigDecimal(1));
+        dataProductoNuevo.setEstatus(PRODUCTOACTIVO);
         dataProductoNuevo.setObservaciones(dataProductoNuevo.getObservaciones());
         dataProductoNuevo.setPrecioVenta(getPrecio(dataProductoNuevo.getIdProductoFk()));
         if(dataProductoNuevo.getCantidad()==null || dataProductoNuevo.getCantidad().intValue()==0 )
         {
-            dataProductoNuevo.setCantidad(new BigDecimal(1));
+            dataProductoNuevo.setCantidad(CANTIDADDEFAULTPRODUCTO);
         }
         dataProductoNuevo.setCantidad(dataProductoNuevo.getCantidad());
         dataProductoNuevo.setTotalProducto(dataProductoNuevo.getCantidad().multiply(dataProductoNuevo.getPrecioVenta(), MathContext.UNLIMITED));
-        System.out.println("Producto: " + dataProductoNuevo.toString());
+        //System.out.println("Producto: " + dataProductoNuevo.toString());
         if (ifaceVentasProductos.insertarVentaProducto(dataProductoNuevo) == 1) {
             JsfUtil.addSuccessMessageClean("Produco Agregado Correcamene");
-
             for (Ventas v : listaVentas) {
                 if (v.getIdVentaPk().intValue() == ventaAddProducto.getIdVentaPk().intValue()) {
                     for (VentasProductos vp : v.getListaProductos()) {
@@ -208,23 +217,25 @@ public class BeanVentas implements Serializable {
     }
 
     public void cancelarVenta() {
-        ventaRemove.setEstatusVenta(new BigDecimal(3));
+        ventaRemove.setEstatusVenta(VENTACANCELADA);
         System.out.println("VentaRemove: " + ventaRemove.toString());
         if (ifaceVentas.cancelarVenta(ventaRemove) == 1) {
             JsfUtil.addSuccessMessageClean("Venta Cancelada");
-            listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+             listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, SUCURSAL, STATUSVENTAACTIVA);
         } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
         }
     }
 
     public void remove() {
-        dataProductoRemove.setEstatus(new BigDecimal(3));
+        dataProductoRemove.setEstatus(PRODUCTOREMOVIDO);
         System.out.println("DataProductoRemove: " + dataProductoRemove.toString());
-        if (ifaceVentasProductos.cancelarItem(dataProductoRemove) == 1) {
+        if (ifaceVentasProductos.cancelarItem(dataProductoRemove) == 1) 
+        {
             JsfUtil.addSuccessMessageClean("Producto Eliminado Correctamente");
             BigDecimal total = new BigDecimal(0);
-            for (Ventas v : listaVentas) {
+            for (Ventas v : listaVentas) 
+            {
                 if (v.getIdVentaPk().intValue() == dataProductoRemove.getIdVentasFk().intValue()) {
                     total = v.getTotal().subtract(dataProductoRemove.getTotalProducto(), MathContext.UNLIMITED);
 
@@ -234,7 +245,7 @@ public class BeanVentas implements Serializable {
             v.setIdVentaPk(dataProductoRemove.getIdVentasFk());
             v.setTotal(total);
             ifaceVentas.cancelarVentaProducto(v);
-            listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+            listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, SUCURSAL, STATUSVENTAACTIVA);
         } else {
             JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
         }
@@ -243,30 +254,38 @@ public class BeanVentas implements Serializable {
 
     public void addVenta() {
         boolean bandera = false;
-        if (venta.getNumeroMesa() == null || venta.getIdMeseroFk() == null) {
+        if (venta.getNumeroMesa() == null || venta.getIdMeseroFk() == null) 
+        {
             JsfUtil.addErrorMessageClean("Favor de ingresar todos los datos para realizar la venta");
-        } else {
-            for (Ventas v : listaVentas) {
-                if (v.getNumeroMesa().intValue() == venta.getNumeroMesa().intValue()) {
+        } else 
+        {
+            for (Ventas v : listaVentas) 
+            {
+                if (v.getNumeroMesa().intValue() == venta.getNumeroMesa().intValue()) 
+                {
                     bandera = true;
                     System.out.println("Encontro mesa repetida");
                 }
             }
-            if (bandera) {
+            if (bandera) 
+            {
                 JsfUtil.addErrorMessageClean("Esa mesa se encuentra activa, seleccionar otra o finalizar la venta de esa mesa");
-            } else {
-                if (venta.getCantidadPersonas() == null || venta.getCantidadPersonas().intValue() == 0) {
-                    venta.setCantidadPersonas(new BigDecimal(1));
+            } else 
+            {
+                if (venta.getCantidadPersonas() == null || venta.getCantidadPersonas().intValue() == 0)
+                {
+                    venta.setCantidadPersonas(CANTIDADDEFAULTPERSONAS);
                 }
                 venta.setIdVentaPk(new BigDecimal(ifaceVentas.getNextVal()));
-                venta.setIdSucursalFk(new BigDecimal(1));
+                venta.setIdSucursalFk(SUCURSAL);
                 venta.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))+1));
-                venta.setEstatusVenta(new BigDecimal(1));
+                venta.setEstatusVenta(STATUSVENTAACTIVA);
                 System.out.println("Venta: " + venta.toString());
-                if (ifaceVentas.insertarVenta(venta) != 0) {
+                if (ifaceVentas.insertarVenta(venta) != 0) 
+                {
                     JsfUtil.addSuccessMessageClean("Se ha iniciado la venta correctamente");
                     venta.reset();
-                    listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+                    listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, SUCURSAL, STATUSVENTAACTIVA);
                 } else {
                     JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
                 }
@@ -279,11 +298,11 @@ public class BeanVentas implements Serializable {
         return hoy;
     }
 
-    public void finalizarVenta() {
-
+    public void finalizarVenta() 
+    {
         Ventas ventaImprimir = new Ventas();
-        ventaFinalizar.setEstatusVenta(new BigDecimal(2));
-        ventaFinalizar.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))));
+        ventaFinalizar.setEstatusVenta(VENTAFINALIZADA);
+        //ventaFinalizar.setFolio(new BigDecimal(ifaceVentas.getNextFolioByIdSucursal(new BigDecimal(1))));
         BigDecimal total = new BigDecimal(0);
         for (Ventas v : listaVentas) {
             if (v.getIdVentaPk().intValue() == ventaFinalizar.getIdVentaPk().intValue()) {
@@ -304,7 +323,7 @@ public class BeanVentas implements Serializable {
                 generateReport(ventaImprimir.getIdVentaPk().intValue(), ventaImprimir.getFolio().intValue());
                 RequestContext.getCurrentInstance().execute("window.frames.miFrame.print();");
 
-                listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, new BigDecimal(1), new BigDecimal(1));
+               listaVentas = ifaceVentas.getVentasByInterval(hoy, hoy, SUCURSAL, STATUSVENTAACTIVA);
             } else {
                 JsfUtil.addErrorMessageClean("Ocurrio un problema, contactar a soporte");
             }

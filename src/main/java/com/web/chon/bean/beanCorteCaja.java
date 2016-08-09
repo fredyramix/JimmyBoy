@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package com.web.chon.bean;
-
 import com.web.chon.dominio.CorteVista1;
 import com.web.chon.dominio.Ventas;
 import com.web.chon.dominio.VentasProductos;
@@ -104,7 +103,8 @@ public class beanCorteCaja implements Serializable {
         vistaMeseros = new ArrayList<CorteVista1>();
     }
 
-    public void descargar() {
+    public void descargar() 
+    {
         if (vista1.isEmpty() || vistaCategorias.isEmpty() || vistaMeseros.isEmpty()) {
             JsfUtil.addErrorMessageClean("Genera una consulta primero");
         } else {

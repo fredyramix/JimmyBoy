@@ -53,7 +53,7 @@ public class EjbVentas implements NegocioVentas{
     public int getNextFolioByIdSucursal(BigDecimal idSucursal) 
     {
         try {
-            Query query = em.createNativeQuery("select NVL(max(FOLIO),0) as FOLIO  from VENTAS where ID_SUCURSAL_FK = ?");
+            Query query = em.createNativeQuery("select NVL(count(FOLIO),0) as FOLIO  from VENTAS where ID_SUCURSAL_FK = ?");
             query.setParameter(1, idSucursal);
             return Integer.parseInt(query.getSingleResult().toString());
         } catch (Exception e) {
@@ -98,12 +98,11 @@ public class EjbVentas implements NegocioVentas{
     }
     @Override
     public int finalizarVenta(Ventas venta) {
-       Query query = em.createNativeQuery("UPDATE  VENTAS SET ESTATUS_VENTAS = ?,FECHA_FIN=sysdate,FOLIO = ?, TOTAL=?  WHERE ID_VENTAS_PK =?");
+       Query query = em.createNativeQuery("UPDATE  VENTAS SET ESTATUS_VENTAS = ?,FECHA_FIN=sysdate, TOTAL=?  WHERE ID_VENTAS_PK =?");
         System.out.println("ventas ejb :" + venta.toString());
         query.setParameter(1, venta.getEstatusVenta());
-        query.setParameter(2, venta.getFolio());
-        query.setParameter(3, venta.getTotal());
-        query.setParameter(4, venta.getIdVentaPk());
+        query.setParameter(2, venta.getTotal());
+        query.setParameter(3, venta.getIdVentaPk());
         
         return query.executeUpdate();
         

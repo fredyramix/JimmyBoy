@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2016-08-04T20:42:45 -->
+<!-- 2016-08-09T06:56:00 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Coffee" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ced95029-b569-4027-895c-af2843a4e088">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="AdaptadorJimmyBoy"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -203,7 +203,7 @@ and v.ESTATUS_VENTAS = 2 and vp.ESTATUS=1 GROUP BY  cat.ID_CATEGORIA_PK,cat.NOMB
 			<![CDATA[SELECT vp.ID_PRODUCTO_FK,p.NOMBRE_PRODUCTO,sum(vp.CANTIDAD) as cantidad,sum(vp.TOTAL)as total FROM VENTAS_PRODUCTOS vp
 inner join VENTAS v on v.ID_VENTAS_PK = vp.ID_VENTAS_FK
 inner join PRODUCTOS p on p.ID_PRODUCTO_PK = vp.ID_PRODUCTO_FK
-WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '01/08/2016' and '01/08/2016'
+WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN $P{ff} and $P{fi}
 and v.ESTATUS_VENTAS = 2  and vp.ESTATUS=1 GROUP BY  p.NOMBRE_PRODUCTO,vp.ID_PRODUCTO_FK ORDER BY total desc]]>
 		</queryString>
 		<field name="ID_PRODUCTO_FK" class="java.lang.String"/>
