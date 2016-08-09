@@ -53,7 +53,7 @@ public class EjbVentas implements NegocioVentas{
     public int getNextFolioByIdSucursal(BigDecimal idSucursal) 
     {
         try {
-            Query query = em.createNativeQuery("select NVL(count(FOLIO),0) as FOLIO  from VENTAS where ID_SUCURSAL_FK = ?");
+            Query query = em.createNativeQuery("select NVL(count(FOLIO),0) as FOLIO  from VENTAS where ID_SUCURSAL_FK = ? ");
             query.setParameter(1, idSucursal);
             return Integer.parseInt(query.getSingleResult().toString());
         } catch (Exception e) {
