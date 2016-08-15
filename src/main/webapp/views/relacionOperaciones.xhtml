@@ -14,7 +14,7 @@
         </div>
         <h:form id="formContent">
             <p:messages id="messages" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
-            
+
             <p:panel>
                 <div class="container-fluid">
                     <div class="form-group" align="right">
@@ -95,6 +95,11 @@
                                     <f:convertNumber type="currency" currencySymbol="$" />
                                 </h:outputText>
                             </p:column>
+                            <p:column headerText="Imprimir" width="80px;" class="alignCenter">
+                                <p:commandButton id="imprimir" ajax="true" immediate="true" action="#{beanRelacionOperaciones.imprimir()}" icon="ui-icon-print" styleClass="ui-priority-primary" update=":formContent">
+                                    <f:setPropertyActionListener value="#{model}" target="#{beanRelacionOperaciones.ventaImprimir}"/>
+                                </p:commandButton>
+                            </p:column>
                             <p:columnGroup type="footer">
                                 <p:row>
                                     <p:column colspan="1"/>
@@ -137,10 +142,13 @@
                                                 <f:convertNumber type="currency" currencySymbol="$" />
                                             </h:outputText>
                                         </p:column>
+
                                     </p:dataTable>
                                 </div>
                             </p:rowExpansion>
                         </p:dataTable>
+                        <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanRelacionOperaciones.rutaPDF}"/>
+                    
                     </div>
                 </div>
             </p:panel>
