@@ -62,6 +62,19 @@ public class EjbVentas implements NegocioVentas{
         }
         
     }
+     @Override
+    public int getCantPersonasByFecha(String fechaIni, String fechaFin) 
+    {
+        try {
+            Query query = em.createNativeQuery("SELECT sum(v.CANTIDAD_PERSONAS) FROM VENTAS v\n" +
+"WHERE TO_DATE(TO_CHAR(v.FECHA_INICIO,'dd/mm/yyyy'),'dd/mm/yyyy') BETWEEN '"+fechaIni+"' and '"+fechaFin+"'");
+            return Integer.parseInt(query.getSingleResult().toString());
+        } catch (Exception e) {
+            System.out.println("Error >" + e.getMessage());
+            return 1;
+        }
+        
+    }
 
     @Override
     public List<Object[]> getVentasByInterval(String fechaInicio, String fechaFin, BigDecimal idSucursal, BigDecimal idStatusVenta) 

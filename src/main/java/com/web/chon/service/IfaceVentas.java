@@ -41,6 +41,8 @@ public interface IfaceVentas {
     public ArrayList<CorteVista1> getVentasCategorias(Date fechaInicio, Date fechaFin);
     
     public ArrayList<CorteVista1> getVentasMeseros(Date fechaInicio, Date fechaFin);
+    
+    public int getCantPersonasByFecha(String fechaIni, String fechaFin);
 
     
     

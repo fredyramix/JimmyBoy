@@ -32,5 +32,6 @@ public interface NegocioVentas {
     public List<Object[]> getVentasCorte1(String fechaInicio, String fechaFin); 
     public List<Object[]> getVentasCategorias(String fechaInicio, String fechaFin);
     public List<Object[]> getVentasMeseros(String fechaInicio, String fechaFin);
+    public int getCantPersonasByFecha(String fechaIni, String fechaFin);
 
 }

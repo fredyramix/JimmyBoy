@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2016-08-09T06:53:07 -->
+<!-- 2016-08-16T01:18:25 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Coffee" pageWidth="219" pageHeight="842" columnWidth="179" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ced95029-b569-4027-895c-af2843a4e088">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="AdaptadorJimmyBoy"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -225,6 +225,9 @@ and v.ESTATUS_VENTAS = 2  and vp.ESTATUS=1 GROUP BY  p.NOMBRE_PRODUCTO,vp.ID_PRO
 	</subDataset>
 	<parameter name="fechaIni" class="java.lang.String"/>
 	<parameter name="fechaFin" class="java.lang.String"/>
+	<parameter name="promedio" class="java.lang.String"/>
+	<parameter name="cantPers" class="java.lang.String"/>
+	<parameter name="toVen" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT SYSDATE FROM DUAL]]>
 	</queryString>
@@ -242,7 +245,7 @@ and v.ESTATUS_VENTAS = 2  and vp.ESTATUS=1 GROUP BY  p.NOMBRE_PRODUCTO,vp.ID_PRO
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="163" splitType="Stretch">
+		<band height="198" splitType="Stretch">
 			<staticText>
 				<reportElement style="Title" x="30" y="10" width="130" height="62" uuid="1a652692-054a-40f3-ade5-68d8da36626d"/>
 				<textElement verticalAlignment="Middle">
@@ -258,32 +261,68 @@ and v.ESTATUS_VENTAS = 2  and vp.ESTATUS=1 GROUP BY  p.NOMBRE_PRODUCTO,vp.ID_PRO
 				<text><![CDATA[Reporte de Ventas]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="100" width="80" height="22" uuid="f0bfb1ea-a85a-47cd-a1a4-43f22b45e80f"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="0" y="100" width="80" height="16" uuid="f0bfb1ea-a85a-47cd-a1a4-43f22b45e80f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[Fecha de Inicio:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="129" width="80" height="16" uuid="e885197a-9288-4f99-a6d0-304996ba5986"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="0" y="116" width="80" height="16" uuid="e885197a-9288-4f99-a6d0-304996ba5986"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<text><![CDATA[Fecha de Fin:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="80" y="100" width="100" height="22" uuid="c0e2f9ed-b4e1-4178-bc8d-781ce18a9981"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="80" y="100" width="100" height="16" uuid="c0e2f9ed-b4e1-4178-bc8d-781ce18a9981"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{fechaIni}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="80" y="130" width="100" height="16" uuid="3f39b04d-25cf-4d14-84f8-fb474f67b70b"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
+				<reportElement x="80" y="116" width="100" height="16" uuid="3f39b04d-25cf-4d14-84f8-fb474f67b70b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{fechaFin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="132" width="80" height="16" uuid="ef458a51-611c-4278-8f2d-aa48669e98c6"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Cant. Personas:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="148" width="80" height="16" uuid="e5f2a7ad-40d5-47c8-bd90-8bd2d1609eb7"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Total de Ventas:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="164" width="80" height="16" uuid="21455fbd-e6f8-4e81-9830-7efe8c6a189c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Promedio:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="132" width="100" height="16" uuid="a42893ad-1419-460b-821e-0954675376e9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{cantPers}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="148" width="100" height="16" uuid="ffec20c4-839e-4998-9948-a410ce779819"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{toVen}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="164" width="100" height="16" uuid="4e987e1f-9ab3-41a7-a099-3cf9f1c91f5d"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{promedio}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>

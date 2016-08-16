@@ -226,5 +226,11 @@ public class ServiceVentas implements IfaceVentas {
         return lstVenta;
     
     }
+
+    @Override
+    public int getCantPersonasByFecha(String fechaIni, String fechaFin) {
+        getEjb();
+        return ejb.getCantPersonasByFecha(fechaIni, fechaFin);
+    }
     
 }

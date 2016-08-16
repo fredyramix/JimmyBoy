@@ -20,8 +20,8 @@
                         <p:commandButton value="Buscar" update=":formContent" ajax="true" action="#{beanCorteCaja.buscar()}"/>
                         <p:commandButton value="Descargar" update=":formContent" ajax="false" action="#{beanCorteCaja.descargar()}"/>
                         <p:commandButton value="Imprimir" update=":formContent" ajax="true" action="#{beanCorteCaja.imprimir()}"/>
-<!--<p:commandButton  value="imprimir ticket" id="btonImprimir" ajax="false" rendered="{beanCorteCaja.viewEstate =='init'}"  onclick="window.frames.miFrame.print();" resetValues="true" />-->
-                            
+                        <!--<p:commandButton  value="imprimir ticket" id="btonImprimir" ajax="false" rendered="{beanCorteCaja.viewEstate =='init'}"  onclick="window.frames.miFrame.print();" resetValues="true" />-->
+
                     </div>
                     <div class="col-lg-12 col-md-4 col-sm-12 col-xs-12 ">
                         <div class="col-lg-2 col-md-4 col-sm-12 col-xs-12">
@@ -49,6 +49,28 @@
 
                     </div>
                 </div>
+            </p:panel>
+            <p:panel>
+                <div>
+                    <h5>Datos Generales</h5>
+                </div>
+                <div class="container-fluid">
+                    <div class="col-lg-12 col-md-10 col-md-12 col-xs-12 col-lg-offset-1 col-md-offset-1">
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 form-group">
+                            <p:outputLabel class="col-lg-6 col-md-3 col-sm-4 col-xs-12"  for="txtCantidadPersonas" value ="Cantidad de Personas:" /> 
+                            <p:inputText id="txtCantidadPersonas" maxlength="5" class="col-lg-6 col-md-5 col-sm-8 col-xs-12" value="#{beanCorteCaja.cantidadPersonas}" readonly="true"/>
+                        </div>
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 form-group">
+                            <p:outputLabel class="col-lg-6 col-md-3 col-sm-4 col-xs-12"  for="txtTotalVentas" value ="Total de Ventas:" /> 
+                            <p:inputText id="txtTotalVentas" maxlength="10" class="col-lg-6 col-md-5 col-sm-8 col-xs-12" value="#{beanCorteCaja.totalVentas}" readonly="true" />
+                        </div>
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 form-group">
+                            <p:outputLabel class="col-lg-6 col-md-3 col-sm-4 col-xs-12"  for="txtPromedio" value ="Promedio de Consumo por Persona:" /> 
+                            <p:inputText id="txtPromedio" maxlength="10" class="col-lg-6 col-md-5 col-sm-8 col-xs-12" value="#{beanCorteCaja.promedio}" readonly="true"/>
+                        </div>
+                    </div>
+                </div>
+
             </p:panel>
             <p:panel>
                 <div>
@@ -190,8 +212,8 @@
                         </p:dataTable>
                     </div>
                 </div>
-                   <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanCorteCaja.rutaPDF}"/>
-            
+                <iframe id="miFrame" name="miFrame" style="position: absolute;" class="hidden" src="#{beanCorteCaja.rutaPDF}"/>
+
             </p:panel>
 
         </h:form>

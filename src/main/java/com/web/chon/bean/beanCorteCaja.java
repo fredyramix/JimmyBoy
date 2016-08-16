@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -91,7 +92,9 @@ public class beanCorteCaja implements Serializable {
     private String rutaPDF;
     private String nombreEmpaque = "";
     private String pathFileJasper = "C:/Users/Juan/Documents/NetBeansProjects/Chonajos-V2/ticket.jasper";
-
+private BigDecimal cantidadPersonas;
+private BigDecimal totalVentas;
+private BigDecimal promedio;
     @PostConstruct
     public void init() {
         status = 2;
@@ -101,13 +104,18 @@ public class beanCorteCaja implements Serializable {
         vista1 = new ArrayList<CorteVista1>();
         vistaCategorias = new ArrayList<CorteVista1>();
         vistaMeseros = new ArrayList<CorteVista1>();
+        cantidadPersonas=new BigDecimal(0);
+ totalVentas=new BigDecimal(0);
+promedio=new BigDecimal(0);
+        
     }
 
     public void descargar() 
     {
         if (vista1.isEmpty() || vistaCategorias.isEmpty() || vistaMeseros.isEmpty()) {
             JsfUtil.addErrorMessageClean("Genera una consulta primero");
-        } else {
+        } else 
+        {
             setParameterTicket(vistaCategorias, vista1, vistaMeseros);
             generateReport(1, "Coffee_2");
             downloadFile();
@@ -134,7 +142,8 @@ public class beanCorteCaja implements Serializable {
         totalMeseros = new BigDecimal(0);
         if (getFechaFiltroInicio() == null || getFechaFiltroFin() == null) {
             JsfUtil.addErrorMessageClean("Favor de ingresar un rango de fechas");
-        } else {
+        } else 
+        {
             System.out.println("Fecha Inicio: " + fechaFiltroInicio);
             System.out.println("Fecha Inicio: " + fechaFiltroFin);
             vista1 = ifaceVentas.getVentasCorte1(fechaFiltroInicio, fechaFiltroFin);
@@ -143,7 +152,9 @@ public class beanCorteCaja implements Serializable {
             getTotalVistaProductos();
             getTotalVistaCategorias();
             getTotalVistaMeseros();
-
+            cantidadPersonas = new BigDecimal(ifaceVentas.getCantPersonasByFecha(TiempoUtil.getFechaDDMMYYYY(fechaFiltroInicio), TiempoUtil.getFechaDDMMYYYY(fechaFiltroFin)));
+            totalVentas  = totalVista1;
+            promedio = totalVentas.divide(cantidadPersonas, 2, RoundingMode.HALF_UP);
         }
 
     }
@@ -270,6 +281,13 @@ public class beanCorteCaja implements Serializable {
 
         paramReport.put("fechaIni", TiempoUtil.getFechaDDMMYYYY(fechaFiltroInicio));
         paramReport.put("fechaFin", TiempoUtil.getFechaDDMMYYYY(fechaFiltroFin));
+        System.out.println("Cantidad Personas: "+cantidadPersonas);
+        System.out.println("Total Ventas: "+totalVentas);
+        System.out.println("Promedio: "+promedio);
+        
+        paramReport.put("cantPers", cantidadPersonas.toString());
+        paramReport.put("toVen", nf.format(totalVentas).toString());
+        paramReport.put("promedio", nf.format(promedio).toString());
 
     }
 
@@ -529,5 +547,30 @@ public class beanCorteCaja implements Serializable {
     public void setPathFileJasper(String pathFileJasper) {
         this.pathFileJasper = pathFileJasper;
     }
+
+    public BigDecimal getCantidadPersonas() {
+        return cantidadPersonas;
+    }
+
+    public void setCantidadPersonas(BigDecimal cantidadPersonas) {
+        this.cantidadPersonas = cantidadPersonas;
+    }
+
+    public BigDecimal getTotalVentas() {
+        return totalVentas;
+    }
+
+    public void setTotalVentas(BigDecimal totalVentas) {
+        this.totalVentas = totalVentas;
+    }
+
+    public BigDecimal getPromedio() {
+        return promedio;
+    }
+
+    public void setPromedio(BigDecimal promedio) {
+        this.promedio = promedio;
+    }
+    
 
 }
